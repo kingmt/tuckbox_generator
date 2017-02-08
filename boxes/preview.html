@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <style>
+table {border-spacing:0}
+table tr td {margin:0;padding:0;text-align: center;}
+div {border:1px solid black;text-align: center;margin:0;padding:0;display:table-cell;vertical-align:middle;}
+.side {width:50px;height:300px ;overflow:auto;}
+.top  {width:150px;height:50px ;overflow:auto;}
+.face {width:150px;height:300px;overflow:auto;}
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+          <div class="top">
+            <p>
+            TOP
+            </p>
+          </div>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="face">
+            <p>
+            By using overflow-y, we can create scroll bars when the contents of this div are bigger/higher than the container. Also, by setting this paragraph to 250 percent, it is automatically 250 percent higher than the parent container - forcing an overflow.
+            By using overflow-y, we can create scroll bars when the contents of this div are bigger/higher than the container. Also, by setting this paragraph to 250 percent, it is automatically 250 percent higher than the parent container - forcing an overflow.
+            </p>
+          </div>
+        </td>
+        <td>
+          <div class="side">
+            <p style="font-size:45px">
+          S I D E
+            </p>
+          </div>
+        </td>
+        <td>
+          <div class="face">
+            <p style="font-size:25px">
+              BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK BACK
+            </p>
+          </div>
+        </td>
+        <td>
+          <div class="side">
+            <p>
+            SIDE
+            </p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+          <div class="top" >
+            <p >
+              BOTTOM
+            </p>
+          </div>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </body>
+</html>

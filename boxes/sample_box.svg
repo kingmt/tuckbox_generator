@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="1100"
+  height="850"
+  id="svg2">
+  <g id="margin">
+    <rect x="50" y="50" width="1000" height="695" fill="none" stroke="black" stroke-width="1"  />
+  </g>
+  <g>
+    <!-- left side
+    <rect x="60" y="300" width="85" height="350" fill="none" stroke="black" stroke-width="1" stroke-dasharray="20,10" />
+ -->
+    <!-- back side
+    <rect x="145" y="300" width="230" height="350" fill="none" stroke="red" stroke-width="1" stroke-dasharray="20,10" />
+ -->
+    <!-- right side
+    <rect x="375" y="300" width="85" height="350" fill="none" stroke="red" stroke-width="1" stroke-dasharray="20,10" />
+ -->
+    <!-- front side
+    <rect x="460" y="300" width="230" height="350" fill="none" stroke="red" stroke-width="1" stroke-dasharray="20,10" />
+ -->
+    <!-- side glue flap -->
+    <rect x="700" y="310" width="65" height="330" fill="#CCC" stroke="none" />
+
+    <!-- bottom glue flap -->
+    <rect x="470" y="660" width="210" height="65" fill="#CCC" stroke="none" />
+
+    <!-- top
+    <rect x="145" y="215" width="230" height="85" fill="none" stroke="red" stroke-width="1" stroke-dasharray="20,10"  />
+ -->
+    <!-- tuck flap -->
+    <path d="M 145 215
+             L 145 165
+             L 170 140
+             L 355 140
+             L 375 165
+             L 375 215 " fill="none" stroke-width="1.5" stroke="black" />
+
+    <!-- tuck side 1 -->
+    <path d="M 60 300
+             L 60 290
+             L 70 275
+             L 80 225
+             L 145 225
+             L 145 300 " fill="none" stroke-width="1.5" stroke="black" />
+    <!-- tuck side 2 -->
+    <path d="M 375 300
+             L 375 225
+             L 440 225
+             L 450 275
+             L 460 290
+             L 460 300 " fill="none" stroke-width="1.5" stroke="black" />
+
+    <!-- bottom left side glue -->
+    <rect x="70"  y="660" width="65" height="55" fill="#CCC" stroke="none" />
+
+    <!-- bottom right side glue -->
+    <rect x="385"  y="660" width="65" height="55" fill="#CCC" stroke="none" />
+
+  </g>
+  <g id="fold lines" >
+    <!-- bottom
+    <line x1="60"  y1="650" x2="690"  y2="650" stroke-width="1" stroke="black" stroke-dasharray="20,10" />
+    -->
+    <line x1="145"  y1="215" x2="375"  y2="215" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+    <line x1="60"  y1="300" x2="460"  y2="300" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+    <line x1="60"  y1="650" x2="690"  y2="650" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+    <line x1="145"  y1="300" x2="145"  y2="650" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+    <line x1="375"  y1="300" x2="375"  y2="650" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+    <line x1="460"  y1="300" x2="460"  y2="650" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+    <line x1="690"  y1="300" x2="690"  y2="650" stroke-width="1" stroke="black" stroke-dasharray="2,4" />
+  </g>
+  <g id="cut lines" >
+    <!-- left side -->
+    <line x1="60"  y1="300" x2="60"  y2="725" stroke-width="1.5" stroke="black" />
+    <!--
+    -->
+    <!-- left glue flap bottom -->
+    <line x1="60"  y1="725" x2="145" y2="725" stroke-width="1.5" stroke="black" />
+    <!-- bottom left side  -->
+    <line x1="145" y1="650" x2="145" y2="735" stroke-width="1.5" stroke="black" />
+    <!-- bottom -->
+    <line x1="145" y1="735" x2="375" y2="735" stroke-width="1.5" stroke="black" />
+    <!-- bottom right side -->
+    <line x1="375" y1="650" x2="375" y2="735" stroke-width="1.5" stroke="black" />
+    <!-- right glue flap bottom -->
+    <line x1="375"  y1="725" x2="460" y2="725" stroke-width="1.5" stroke="black" />
+    <!-- bottom glue flap left side  -->
+    <line x1="460" y1="650" x2="460" y2="735" stroke-width="1.5" stroke="black" />
+    <!-- bottom glue flap -->
+    <line x1="460" y1="735" x2="690" y2="735" stroke-width="1.5" stroke="black" />
+    <!-- bottom right side glue flap -->
+    <line x1="690" y1="650" x2="690" y2="735" stroke-width="1.5" stroke="black" />
+    <!-- bottom of side glue flap -->
+    <line x1="690" y1="650" x2="775" y2="650" stroke-width="1.5" stroke="black" />
+    <!-- right side of side glue flap -->
+    <line x1="775" y1="300" x2="775" y2="650" stroke-width="1.5" stroke="black" />
+    <!-- top of front and side glue flap -->
+    <line x1="460" y1="300" x2="775" y2="300" stroke-width="1.5" stroke="black" />
+    <!-- notch -->
+    <circle cx="575" cy="300" r="35" fill="none" stroke="black" stroke-width="1.5"  />
+    <line x1="575" y1="300" x2="575" y2="335" stroke="black" stroke-width="1.5" />
+    <!-- top, left side -->
+    <line x1="145" y1="215" x2="145" y2="300" stroke="black" stroke-width="1.5" />
+    <!-- top, right side -->
+    <line x1="375" y1="215" x2="375" y2="300" stroke="black" stroke-width="1.5" />
+    <!-- tuck flap fold left -->
+    <line x1="145" y1="215" x2="175" y2="215" stroke-width="1.5" stroke="black" />
+    <!-- tuck flap fold right -->
+    <line x1="345" y1="215" x2="375" y2="215" stroke-width="1.5" stroke="black" />
+    <line x1="" y1="" x2="" y2="" stroke-width="1.5" stroke="black" />
+    <!--  -->
+    <line x1="" y1="" x2="" y2="" stroke-width="1.5" stroke="black" />
+    <!--  -->
+    <line x1="" y1="" x2="" y2="" stroke-width="1.5" stroke="black" />
+  </g>
+
+  <!--
+       given h = 350
+             w = 230
+             t =  85
+
+      key point is X margin + 10, y margin -10 -->
+  <g>
+    <circle cx=" 60" cy="735" r="5" fill="red" />
+    <circle cx=" 60" cy="725" r="5" fill="green" />
+    <circle cx=" 60" cy="650" r="5" fill="green" />
+    <circle cx=" 60" cy="300" r="5" fill="green" />
+    <circle cx=" 60" cy="290" r="5" fill="green" />
+    <circle cx=" 70" cy="275" r="5" fill="green" />
+    <circle cx=" 80" cy="225" r="5" fill="green" />
+    <circle cx="145" cy="165" r="5" fill="green" />
+    <circle cx="145" cy="215" r="5" fill="green" />
+    <circle cx="145" cy="225" r="5" fill="green" />
+    <circle cx="145" cy="300" r="5" fill="green" />
+    <circle cx="145" cy="735" r="5" fill="green" />
+    <circle cx="145" cy="725" r="5" fill="green" />
+    <circle cx="145" cy="650" r="5" fill="green" />
+    <circle cx="170" cy="140" r="5" fill="green" />
+    <circle cx="170" cy="215" r="5" fill="green" />
+    <circle cx="355" cy="140" r="5" fill="green" />
+    <circle cx="355" cy="215" r="5" fill="green" />
+    <circle cx="375" cy="165" r="5" fill="green" />
+    <circle cx="375" cy="215" r="5" fill="green" />
+    <circle cx="375" cy="225" r="5" fill="green" />
+    <circle cx="375" cy="300" r="5" fill="green" />
+    <circle cx="375" cy="735" r="5" fill="green" />
+    <circle cx="375" cy="725" r="5" fill="green" />
+    <circle cx="375" cy="650" r="5" fill="green" />
+    <circle cx="440" cy="225" r="5" fill="green" />
+    <circle cx="450" cy="275" r="5" fill="green" />
+    <circle cx="460" cy="290" r="5" fill="green" />
+    <circle cx="460" cy="300" r="5" fill="green" />
+    <circle cx="460" cy="650" r="5" fill="green" />
+    <circle cx="460" cy="725" r="5" fill="green" />
+    <circle cx="460" cy="735" r="5" fill="green" />
+    <circle cx="690" cy="300" r="5" fill="green" />
+    <circle cx="690" cy="650" r="5" fill="green" />
+    <circle cx="690" cy="735" r="5" fill="green" />
+    <circle cx="775" cy="300" r="5" fill="green" />
+    <circle cx="775" cy="650" r="5" fill="green" />
+    <circle cx="575" cy="300" r="5" fill="green" />
+  </g>
+</svg>

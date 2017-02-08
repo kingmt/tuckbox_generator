@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="1100"
+  height="1700"
+  id="svg2">
+  <g>
+    <rect x="50" y="50" width="1000" height="1600" stroke-width="1" stroke="black" fill="#AAA" />"
+  </g>
+  <g>
+<line x1="60" y1="1630" x2="60" y2="1250" stroke-width="1.5" stroke="black" />
+<line x1="60" y1="1250" x2="70" y2="1235" stroke-width="1.5" stroke="black" />
+<line x1="70" y1="1235" x2="80" y2="1195" stroke-width="1.5" stroke="black" />
+<line x1="80" y1="1195" x2="115" y2="1195" stroke-width="1.5" stroke="black" />
+<line x1="115" y1="1205" x2="140" y2="1205" stroke-width="1.5" stroke="black" />
+<line x1="60" y1="1630" x2="115" y2="1630" stroke-width="1.5" stroke="black" />
+<line x1="115" y1="1640" x2="115" y2="1585" stroke-width="1.5" stroke="black" />
+<line x1="115" y1="1155" x2="115" y2="1260" stroke-width="1.5" stroke="black" />
+<line x1="115" y1="1155" x2="140" y2="1130" stroke-width="1.5" stroke="black" />
+<line x1="140" y1="1130" x2="345" y2="1130" stroke-width="1.5" stroke="black" />
+<line x1="345" y1="1130" x2="365" y2="1155" stroke-width="1.5" stroke="black" />
+<line x1="365" y1="1155" x2="365" y2="1260" stroke-width="1.5" stroke="black" />
+<line x1="365" y1="1195" x2="400" y2="1195" stroke-width="1.5" stroke="black" />
+<line x1="400" y1="1195" x2="410" y2="1235" stroke-width="1.5" stroke="black" />
+<line x1="410" y1="1235" x2="420" y2="1250" stroke-width="1.5" stroke="black" />
+<line x1="420" y1="1250" x2="420" y2="1260" stroke-width="1.5" stroke="black" />
+<line x1="420" y1="1260" x2="725" y2="1260" stroke-width="1.5" stroke="black" />
+<line x1="725" y1="1260" x2="725" y2="1585" stroke-width="1.5" stroke="black" />
+<line x1="670" y1="1585" x2="725" y2="1585" stroke-width="1.5" stroke="black" />
+<line x1="670" y1="1585" x2="670" y2="1640" stroke-width="1.5" stroke="black" />
+<line x1="420" y1="1640" x2="670" y2="1640" stroke-width="1.5" stroke="black" />
+<line x1="420" y1="1585" x2="420" y2="1640" stroke-width="1.5" stroke="black" />
+<line x1="365" y1="1585" x2="365" y2="1640" stroke-width="1.5" stroke="black" />
+<line x1="365" y1="1630" x2="420" y2="1630" stroke-width="1.5" stroke="black" />
+<line x1="115" y1="1640" x2="365" y2="1640" stroke-width="1.5" stroke="black" />
+<line x1="345" y1="1205" x2="365" y2="1205" stroke-width="1.5" stroke="black" />
+<line x1="60" y1="1585" x2="670" y2="1585" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<line x1="60" y1="1260" x2="420" y2="1260" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<line x1="140" y1="1205" x2="345" y2="1205" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<line x1="115" y1="1260" x2="115" y2="1585" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<line x1="365" y1="1260" x2="365" y2="1585" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<line x1="420" y1="1260" x2="420" y2="1585" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<line x1="670" y1="1260" x2="670" y2="1585" stroke-width="1.5" stroke="black" stroke-dasharray="2,4" />
+<rect x="680" y="1270" width="35" height="305" fill="#CCC" stroke="none" />
+<rect x="430" y="1595" width="230" height="35" fill="#CCC" stroke="none" />
+<rect x="70" y="1595" width="35" height="25" fill="#CCC" stroke="none" />
+<rect x="375" y="1595" width="35" height="25" fill="#CCC" stroke="none" />
+  </g>
+<g id="images">
+  <svg x="420" y="1260" width="250" height="325"  preserveAspectRatio="none" viewBox="0 0 1983 2629" >
+    <image x="0" y="0" width="1983" height="2629" xlink:href="../how_high_can_I_go.png" />
+  </svg>
+  <svg x="115" y="1260" width="250" height="325"  preserveAspectRatio="none" viewBox="0 0 1983 2629" >
+    <image x="0" y="0" width="1983" height="2629" xlink:href="../how_high_can_I_go.png" />
+  </svg>
+  <svg x="60" y="1585" width="325" height="55" preserveAspectRatio="none" viewBox="0 0 7082 1242" >
+    <image width="7082" height="1242" xlink:href="../logo_golem_arcana_wide.png"/>
+  </svg>
+<image x="420" y="1260" width="325" height="55" xlink:href="../logo_golem_arcana_wide.png" transform="rotate(90 420 1260)"/>
+<image x="365" y="1260" width="250" height="55" xlink:href="../logo_golem_arcana_wide.png" transform="rotate(180 365 1260)"/>
+<image x="115" y="1585" width="250" height="55" xlink:href="../logo_golem_arcana_wide.png" />
+  </g>
+</svg>
