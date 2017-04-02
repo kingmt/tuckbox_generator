@@ -1,0 +1,73 @@
+#debug_points: true
+box:
+  page_size: LETTER # possible values are LETTER, EXECUTIVE, A4, TABLOID, B7, and more
+  page_layout: landscape # possible values are landscape and portrait
+  height: 100
+  # width >= thickness
+  width: 18
+  thickness: 18
+  unit: mm # possible values are mm and in
+  bottom_style: glued # possible values are glued and tucked
+
+faces:
+  front:
+    background_color: CCCCCC
+    text: TOP FRONT END
+    text_fill_color: 00FF00
+    text_stroke_color: FF0000
+    font: Engebrechtre
+    font_size: 50
+    #image: ../how_high_can_I_go.png
+    image_orientation: vertical
+    text_orientation: vertical
+  back:
+    background_color: CCCCCC
+    text: TOP BACK END
+    text_fill_color: 00FF00
+    text_stroke_color: FF0000
+    font: Engebrechtre
+    font_size: 50
+    #image: ../how_high_can_I_go.png
+    image_orientation: vertical
+    text_orientation: vertical
+  bottom:
+    background_color: CC0000
+    text: BOTTOM
+    text_fill_color: 00FF00
+    #text_stroke_color: FF0000
+    font: Pacifico
+    font_size: 50
+    #image: ../how_high_can_I_go.png
+    image_orientation: vertical
+    text_orientation: vertical
+  left_side:
+    background_color: CCCCCC
+    text: LEFT SIDE
+    text_fill_color: 00FF00
+    text_stroke_color: FF0000
+    font: Pacifico
+    font_size: 50
+    #image: ../how_high_can_I_go.png
+    image_orientation: vertical
+    text_orientation: sideways_left
+  right_side:
+    background_color: CCCCCC
+    text: RIGHT SIDE
+    text_fill_color: 00FF00
+    text_stroke_color: FF0000
+    font: Pacifico
+    font_size: 50
+    #image: ../how_high_can_I_go.png
+    image_orientation: vertical
+    text_orientation: sideways_right
+  top:
+    background_color: CC0000
+    text: TOP
+    text_fill_color: 00FF00
+    #text_stroke_color: FF0000
+    font: FFF Tusj
+    font_size: 50
+    #image: ../how_high_can_I_go.png
+    image_orientation: vertical
+    text_orientation: upside_down
+
