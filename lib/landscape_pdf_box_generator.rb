@@ -554,12 +554,12 @@ Prawn::Document.generate("../boxes/landscape_#{width}#{unit}x#{height}#{unit}x#{
                            :page_size   => data['box']['page_size'],
                            :print_scaling => :none,
                            :page_layout => data['box']['page_layout']) do
-font_families.update "Pacifico"      => { :normal => "../Pacifico.ttf" },
-                     "Engebrechtre"  => { :normal => "../engebrechtre.regular.ttf",
-                                          :italic => "../engebrechtre.italic.ttf",
-                                          :bold   => "../engebrechtre.bold.ttf" },
-                     "IceCream Soda" => { :normal => "../ICE-CS__.ttf" },
-                     "FFF Tusj"      => { :normal => "../FFF_Tusj.ttf" }
+font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
+                     "Engebrechtre"  => { :normal => "../fonts/engebrechtre.regular.ttf",
+                                          :italic => "../fonts/engebrechtre.italic.ttf",
+                                          :bold   => "../fonts/engebrechtre.bold.ttf" },
+                     "IceCream Soda" => { :normal => "../fonts/ICE-CS__.ttf" },
+                     "FFF Tusj"      => { :normal => "../fonts/FFF_Tusj.ttf" }
 
   # page 1, outline box with cut and fold lines
 
