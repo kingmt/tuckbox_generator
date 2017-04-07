@@ -213,8 +213,10 @@ points[40] = widths[:bottom_glue_flap_glue_point]           , heights[:bottom_gl
 points[41] = widths[:side_glue_flap_glue_point]             , heights[:side_glue_flap_glue_point]
 points[42] = widths[:back_face_right_side], heights[:faces_lower_tuck_flap_fold]
 points[43] = widths[:back_face_left_side],  heights[:faces_lower_tuck_flap_fold]
-points[44] = widths[:right_side_flap_cut], heights[:start_tuck_flap_corner_rounding]
-points[45] = widths[:left_side_flap_cut],  heights[:start_tuck_flap_corner_rounding]
+points[44] = 0,0
+points[45] = 0,0
+#points[44] = widths[:right_side_flap_cut], heights[:start_tuck_flap_corner_rounding]
+#points[45] = widths[:left_side_flap_cut],  heights[:start_tuck_flap_corner_rounding]
 points[46] = widths[:front_face_left_edge]+3,  heights[:faces_lower_tuck_flap_fold]-eighth_inch
 #points[46] = widths[:front_face_left_edge]+eighth_inch,  heights[:faces_lower_tuck_flap_fold]
 points[47] = widths[:back_face_right_side]+3,  heights[:faces_lower_tuck_flap_fold]-eighth_inch
@@ -347,7 +349,12 @@ else
   cut_lines << points[59] + points[60]
   cut_lines << points[60] + points[61]
   cut_lines << points[61] + points[29]
+  cut_lines << points[53] + points[50]
+  cut_lines << points[51] + points[52]
 end
+
+cut_lines << points[7] + points[14]
+cut_lines << points[16] + points[18]
 cut_lines << points[2] + points[4]
 cut_lines << points[4] + points[5]
 cut_lines << points[5] + points[6]
@@ -412,6 +419,10 @@ glue_boxes << points[40] + [widths[:glue_width], heights[:glue_thick] ]
 glue_boxes << points[38] + [widths[:glue_thick], heights[:glue_flap_thick] ]
 glue_boxes << points[39] + [widths[:glue_thick], heights[:glue_flap_thick] ]
 
+# tuck flap masks
+tuck_flap_masks = {}
+tuck_flap_masks[:top] = [reverse_points[8],reverse_points[7],reverse_points[14],reverse_points[16],reverse_points[18],reverse_points[19]]
+tuck_flap_masks[:bottom] = [reverse_points[12],reverse_points[53],reverse_points[50],reverse_points[51],reverse_points[52],reverse_points[23]]
 
 # box_orientation valid values are:
 #     vertical = point is upper left, no rotation
@@ -600,14 +611,6 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
         line [x1, y1], [x2, y2]
       end
     end
-  end
-  stroke_arc_around points[44], radius: quarter_inch, start_angle: 0, end_angle: 90
-  stroke_arc_around points[45], radius: quarter_inch, start_angle: 90, end_angle: 180
-  if bottom_style == 'glued'
-  else
-    stroke_arc_around points[49], radius: quarter_inch, start_angle: 180, end_angle: 270
-    stroke_arc_around points[48], radius: quarter_inch, start_angle: 270, end_angle: 0
-  end
 
     # notch circle
     fill_color 'FFFFFF'
@@ -671,35 +674,20 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
         #fill_rectangle [0,bounds.height],bounds.width, bounds.height
     end
 
-  font_size 150
-  # FRONT
-  render_box_face face_points[:front_upper_left], face_points[:front_lower_right],
-                  data['faces']['front']
-      ## reflect the front onto the tuck flap
-  render_box_face face_points[:tuck_flap_upper_left], face_points[:tuck_flap_lower_right],
-                  background_color: 'CCCCCC',
-                  text: "FROMT FRONT FRONT FRONT",
-                  text_fill_color: '00FF00',
-                  text_stroke_color: 'FF0000',
-                  font: 'IceCream Soda',
-                  #image: "../how_high_can_I_go.png",
-                  # these orientations must be opposite of the front
-                  image_orientation: 'upside_down',
-                  text_orientation: 'upside_down'
-  ## hide remainder
-  fill_color 'FFFFFF'
-  fill_rectangle face_points[:tuck_flap_upper_left], w, h-t
-
-  if bottom_style == 'tucked'
-    # reflect the bottom of the face onto the bottom tuckflap
-    rotate 180, origin: reverse_points[23] do
-      render_box_face reverse_points[62], reverse_points[23],
-                      data['faces']['front']
-        ## hide remainder
-        fill_color 'FFFFFF'
-        fill_rectangle reverse_points[62], w, h-t
+    if bottom_style == 'tucked'
+      # reflect the bottom of the face onto the bottom tuckflap
+      save_graphics_state do
+        soft_mask do
+          fill_color 0,0,0,0
+          stroke_color 0,0,0,0
+          fill_and_stroke_polygon *tuck_flap_masks[:bottom]
+        end
+        rotate 180, origin: reverse_points[23] do
+          render_box_face reverse_points[62], reverse_points[23],
+                          data['faces']['front']
+        end
+      end
     end
-  end
 
     # BACK
     render_box_face face_points[:back_upper_left], face_points[:back_lower_right],
