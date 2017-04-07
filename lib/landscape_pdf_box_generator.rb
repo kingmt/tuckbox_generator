@@ -312,6 +312,8 @@ face_points[:back_upper_left]  = reverse_points[21]
 face_points[:back_lower_right] = reverse_points[13]
 face_points[:left_side_upper_left]  = reverse_points[10]
 face_points[:left_side_lower_right] = reverse_points[2]
+face_points[:glue_flap_upper_left]  = reverse_points[35]
+face_points[:glue_flap_lower_right] = reverse_points[33]
 face_points[:right_side_upper_left]  = reverse_points[28]
 face_points[:right_side_lower_right] = reverse_points[24]
 face_points[:bottom_upper_left]  = reverse_points[24]
@@ -779,6 +781,9 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                     data['faces']['bottom']
     ## LEFT SIDE
     render_box_face face_points[:left_side_upper_left], face_points[:left_side_lower_right],
+                    data['faces']['left_side']
+    ## Copy LEFT SIDE to the glue flap
+    render_box_face face_points[:glue_flap_upper_left], face_points[:glue_flap_lower_right],
                     data['faces']['left_side']
     ## RIGHT SIDE
     render_box_face face_points[:right_side_upper_left], face_points[:right_side_lower_right],
