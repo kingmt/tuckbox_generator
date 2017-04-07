@@ -793,8 +793,10 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                     data['faces']['top']
 
     ## SIDE TUCK FLAPS
-    fill_color '0000CC'
     # left side
+    if fill_color data['faces']['left_side']['background_color']
+      fill_color data['faces']['left_side']['background_color']
+    end
     fill_polygon reverse_points[ 9],
                  reverse_points[ 6],
                  reverse_points[ 5],
@@ -802,6 +804,9 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                  reverse_points[ 3],
                  reverse_points[10]
     # right side
+    if fill_color data['faces']['right_side']['background_color']
+      fill_color data['faces']['right_side']['background_color']
+    end
     fill_polygon reverse_points[25],
                  reverse_points[26],
                  reverse_points[27],
@@ -810,6 +815,9 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                  reverse_points[20]
     if bottom_style == 'tucked'
       # left side
+      if fill_color data['faces']['left_side']['background_color']
+        fill_color data['faces']['left_side']['background_color']
+      end
       fill_polygon reverse_points[ 2],
                    reverse_points[54],
                    reverse_points[55],
@@ -817,6 +825,9 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                    reverse_points[57],
                    reverse_points[13]
       # right side
+      if fill_color data['faces']['right_side']['background_color']
+        fill_color data['faces']['right_side']['background_color']
+      end
       fill_polygon reverse_points[24],
                    reverse_points[58],
                    reverse_points[59],
