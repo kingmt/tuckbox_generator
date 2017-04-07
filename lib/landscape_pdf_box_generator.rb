@@ -836,6 +836,26 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                    reverse_points[29]
     else
       # bottom style glued
+      # left side
+      if fill_color data['faces']['left_side']['background_color']
+        fill_color data['faces']['left_side']['background_color']
+        stroke_color data['faces']['left_side']['background_color']
+      end
+      fill_rectangle reverse_points[13], t, t
+      # fill_and_stroke_rectangle reverse_points[13], t, t
+      # right side
+      if fill_color data['faces']['right_side']['background_color']
+        fill_color data['faces']['right_side']['background_color']
+        stroke_color data['faces']['right_side']['background_color']
+      end
+      fill_rectangle reverse_points[29], t, t
+      # fill_and_stroke_rectangle reverse_points[29], t, t
+      # front
+      if fill_color data['faces']['front']['background_color']
+        fill_color data['faces']['front']['background_color']
+        stroke_color data['faces']['front']['background_color']
+      end
+      fill_and_stroke_rectangle reverse_points[33], w, t
     end
 
 
