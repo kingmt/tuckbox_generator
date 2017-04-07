@@ -460,7 +460,7 @@ def render_box_face point_upper_left, point_lower_right, args
     save_graphics_state do
       fill_color args['background_color']
       stroke_color args['background_color']
-      fill_rectangle point_upper_left, width, height
+      fill_and_stroke_rectangle point_upper_left, width, height
     end
   end
 
