@@ -83,7 +83,12 @@ tuck_flap_height = if t > three_quarter_inch
                    else
                      t - 5
                    end
-
+bounding_box_width = w*2 + t*3
+bounding_box_height = if bottom_style == 'glued'
+                        t*2 + flap_height + h
+                      else
+                        t*2 + flap_height*2 + h
+                      end
 points = []
 widths = {}
 heights = {}
@@ -92,49 +97,52 @@ fold_lines = []
 glue_boxes = []
 reverse_points = []
 reverse_cut_lines = []
+face_points = {}
 
-reference_starting_x = eighth_inch
+reference_starting_x = 0
 reference_starting_y = if bottom_style == 'glued'
-                         eighth_inch + t
+                         t
                        else
-                         eighth_inch + t + flap_height
+                         t + flap_height
                        end
 
-widths[:left_edge] = eighth_inch
-widths[:left_edge_tuck_flap_indent] = quarter_inch
-widths[:left_edge_tuck_flap_indent_2] = three_eighths_inch
-widths[:back_face_left_side] = eighth_inch + t
-widths[:left_side_flap_cut] = eighth_inch + t + quarter_inch
-widths[:right_side_flap_cut] = eighth_inch + t + w - quarter_inch
-widths[:back_face_right_side] = eighth_inch + t + w
-widths[:right_side_tuck_flap_indent] = 2*t + w - eighth_inch
-widths[:right_side_tuck_flap_indent_2] = 2*t + w
-widths[:front_face_left_edge] = eighth_inch + 2*t + w
-widths[:front_face_right_edge] = eighth_inch + 2*t + 2*w
-widths[:notch_center] = eighth_inch + 2*t + 1.5*w
-widths[:side_glue_flap_right_edge] = eighth_inch + 3*t + 2*w
-widths[:back_left_side_bottom_flap_glue_point] = quarter_inch
-widths[:back_right_side_bottom_flap_glue_point] = quarter_inch + t + w
-widths[:bottom_glue_flap_glue_point] = quarter_inch + 2*t + w
-widths[:side_glue_flap_glue_point] = 2*t + 2*w + quarter_inch
+widths[:left_edge] = 0
+widths[:left_edge_tuck_flap_indent] = eighth_inch
+widths[:left_edge_tuck_flap_indent_2] = quarter_inch
+widths[:back_face_left_side] = t
+widths[:left_side_flap_cut] = t + quarter_inch
+widths[:right_side_flap_cut] = t + w - quarter_inch
+widths[:left_side_flap_corner] = t + eighth_inch
+widths[:right_side_flap_corner] = t + w - eighth_inch
+widths[:back_face_right_side] = t + w
+widths[:right_side_tuck_flap_indent] = 2*t + w - quarter_inch
+widths[:right_side_tuck_flap_indent_2] = 2*t + w - eighth_inch
+widths[:front_face_left_edge] = 2*t + w
+widths[:front_face_right_edge] = 2*t + 2*w
+widths[:notch_center] = 2*t + 1.5*w
+widths[:side_glue_flap_right_edge] = 3*t + 2*w
+widths[:back_left_side_bottom_flap_glue_point] = eighth_inch
+widths[:back_right_side_bottom_flap_glue_point] = eighth_inch + t + w
+widths[:bottom_glue_flap_glue_point] = eighth_inch + 2*t + w
+widths[:side_glue_flap_glue_point] = 2*t + 2*w + eighth_inch
 
-widths[:reverse_left_edge] = right_margin - eighth_inch
-widths[:reverse_left_edge_tuck_flap_indent] = right_margin - quarter_inch
-widths[:reverse_left_edge_tuck_flap_indent_2] = right_margin - three_eighths_inch
-widths[:reverse_back_face_left_side] = right_margin - eighth_inch - t
-widths[:reverse_left_side_flap_cut] = right_margin - eighth_inch - t - quarter_inch
-widths[:reverse_right_side_flap_cut] = right_margin - eighth_inch - t - w + quarter_inch
-widths[:reverse_back_face_right_side] = right_margin - eighth_inch - t - w
-widths[:reverse_right_side_tuck_flap_indent] = right_margin - 2*t - w + eighth_inch
-widths[:reverse_right_side_tuck_flap_indent_2] = right_margin - 2*t - w
-widths[:reverse_front_face_left_edge] = right_margin - eighth_inch - 2*t - w
-widths[:reverse_front_face_right_edge] = right_margin - eighth_inch - 2*t - 2*w
-widths[:reverse_notch_center] = right_margin - eighth_inch - 2*t - 1.5*w
-widths[:reverse_side_glue_flap_right_edge] = right_margin - eighth_inch - 3*t - 2*w
-widths[:reverse_back_left_side_bottom_flap_glue_point] = right_margin - quarter_inch
-widths[:reverse_back_right_side_bottom_flap_glue_point] = right_margin - quarter_inch - t - w
-widths[:reverse_bottom_glue_flap_glue_point] = right_margin - quarter_inch - 2*t - w
-widths[:reverse_side_glue_flap_glue_point] = right_margin - 2*t - 2*w - quarter_inch
+widths[:reverse_left_edge] = bounding_box_width
+widths[:reverse_left_edge_tuck_flap_indent] = bounding_box_width - eighth_inch
+widths[:reverse_left_edge_tuck_flap_indent_2] = bounding_box_width - quarter_inch
+widths[:reverse_back_face_left_side] = bounding_box_width - t
+widths[:reverse_left_side_flap_cut] = bounding_box_width - t - quarter_inch
+widths[:reverse_right_side_flap_cut] = bounding_box_width - t - w + quarter_inch
+widths[:reverse_back_face_right_side] = bounding_box_width - t - w
+widths[:reverse_right_side_tuck_flap_indent] = bounding_box_width - 2*t - w + quarter_inch
+widths[:reverse_right_side_tuck_flap_indent_2] = bounding_box_width - 2*t - w + eighth_inch
+widths[:reverse_front_face_left_edge] = bounding_box_width - 2*t - w
+widths[:reverse_front_face_right_edge] = bounding_box_width - 2*t - 2*w
+widths[:reverse_notch_center] = bounding_box_width - 2*t - 1.5*w
+widths[:reverse_side_glue_flap_right_edge] = bounding_box_width - 3*t - 2*w
+widths[:reverse_back_left_side_bottom_flap_glue_point] = bounding_box_width - eighth_inch
+widths[:reverse_back_right_side_bottom_flap_glue_point] = bounding_box_width - eighth_inch - t - w
+widths[:reverse_bottom_glue_flap_glue_point] = bounding_box_width - eighth_inch - 2*t - w
+widths[:reverse_side_glue_flap_glue_point] = bounding_box_width - 2*t - 2*w - eighth_inch
 
 heights[:glue_patch_on_thickness_sides] = t - quarter_inch
 heights[:glue_patch_on_width_sides] = w - quarter_inch
@@ -293,9 +301,9 @@ reverse_points[59] = widths[:reverse_right_side_tuck_flap_indent],   heights[:bo
 reverse_points[60] = widths[:reverse_right_side_tuck_flap_indent_2], heights[:bottom_side_tuck_flap_at_indent_1]
 reverse_points[61] = widths[:reverse_front_face_left_edge],          heights[:bottom_side_tuck_flap_before_indent_1]
 reverse_points[62] = widths[:reverse_back_face_right_side] - w, heights[:bottom_edge] + h
+reverse_points[63] = widths[:reverse_back_face_left_side] + w, heights[:top_of_top_face] - h
 
 
-face_points = {}
 face_points[:front_upper_left]  = reverse_points[32]
 face_points[:front_lower_right] = reverse_points[29]
 face_points[:back_upper_left]  = reverse_points[21]
@@ -561,27 +569,36 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                      "IceCream Soda" => { :normal => "../fonts/ICE-CS__.ttf" },
                      "FFF Tusj"      => { :normal => "../fonts/FFF_Tusj.ttf" }
 
+  # how many boxes to draw?
+  gutter = eighth_inch
+  num_boxes = (720/(bounding_box_width+gutter)).to_i
+  # puts "I think I can fit #{num_boxes} on a page"
+
   # page 1, outline box with cut and fold lines
 
-  render_box_face face_points[:credits_upper_left], face_points[:credits_lower_right],
-                  info_data['faces']['credits']
-  render_box_face face_points[:url_upper_left], face_points[:url_lower_right],
-                  info_data['faces']['url']
-  render_box_face face_points[:dimensions_upper_left], face_points[:dimensions_lower_right],
-                  info_data['faces']['dimensions']
+  # create bounding box
+  bounding_box [0.5.in,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
+    stroke_bounds
+    render_box_face face_points[:credits_upper_left], face_points[:credits_lower_right],
+                    info_data['faces']['credits']
+    render_box_face face_points[:url_upper_left], face_points[:url_lower_right],
+                    info_data['faces']['url']
+    render_box_face face_points[:dimensions_upper_left], face_points[:dimensions_lower_right],
+                    info_data['faces']['dimensions']
 
 
 
-  if data['debug_points']
-    points.each_with_index do |p, i|
-      # puts "Point #{i} = #{p.inspect}"
-      fill_circle p, 3
-      draw_text i, at: p
+    if data['debug_points']
+      points.each_with_index do |p, i|
+        # puts "Point #{i} = #{p.inspect}"
+        fill_circle p, 3
+        draw_text i, at: p
+      end
     end
-  end
-  stroke do
-    cut_lines.each do |x1,y1,x2,y2|
-      line [x1, y1], [x2, y2]
+    stroke do
+      cut_lines.each do |x1,y1,x2,y2|
+        line [x1, y1], [x2, y2]
+      end
     end
   end
   stroke_arc_around points[44], radius: quarter_inch, start_angle: 0, end_angle: 90
@@ -592,39 +609,67 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
     stroke_arc_around points[48], radius: quarter_inch, start_angle: 270, end_angle: 0
   end
 
-  # notch circle
-  fill_color 'FFFFFF'
-  stroke_color '000000'
-  #bounding_box points[33], width: h, height: w do
-   pie_slice points[37], :radius => quarter_inch,
-             :start_angle => 180, :end_angle => 0
+    # notch circle
+    fill_color 'FFFFFF'
+    stroke_color '000000'
+    #bounding_box points[33], width: h, height: w do
+     pie_slice points[37], :radius => quarter_inch,
+               :start_angle => 180, :end_angle => 0
 
-  #end
+    #end
 
-  save_graphics_state do
-    self.line_width = 0.5
-    dash 2, :space => 2, :phase => 0
-    stroke do
-      fold_lines.each do |x1,y1,x2,y2|
-        line [x1, y1], [x2, y2]
+    save_graphics_state do
+      self.line_width = 0.5
+      dash 2, :space => 2, :phase => 0
+      stroke do
+        fold_lines.each do |x1,y1,x2,y2|
+          line [x1, y1], [x2, y2]
+        end
       end
+      undash
     end
-    undash
-  end
 
 
-  # glue boxes
-  fill_color 'CCCCCC'
-  fill_rectangle points[41], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_height_sides]
-  if bottom_style == 'glued'
-    fill_rectangle points[40], heights[:glue_patch_on_width_sides], heights[:glue_patch_on_thickness_sides]
-    fill_rectangle points[38], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_thickness_sides]
-    fill_rectangle points[39], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_thickness_sides]
+    # glue boxes
+    fill_color 'CCCCCC'
+    fill_rectangle points[41], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_height_sides]
+    if bottom_style == 'glued'
+      fill_rectangle points[40], heights[:glue_patch_on_width_sides], heights[:glue_patch_on_thickness_sides]
+      fill_rectangle points[38], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_thickness_sides]
+      fill_rectangle points[39], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_thickness_sides]
+    end
+    fill_color '000000'
   end
-  fill_color '000000'
+
+  # create bounding box
+  bounding_box [0.75.in+bounding_box_width,0.5.in+bounding_box_height],
+               width: bounding_box_width, height: bounding_box_height do
+    #stamp 'inside_box'
+  end
 
   # page 2 with the images
   start_new_page
+
+  bounding_box [9.5.in-bounding_box_width,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
+    stroke_bounds
+    font_size 150
+    # FRONT
+    render_box_face face_points[:front_upper_left], face_points[:front_lower_right],
+                    data['faces']['front']
+        ## reflect the front onto the tuck flap
+    save_graphics_state do
+      soft_mask do
+        fill_color 0,0,0,0
+        stroke_color 0,0,0,0
+        fill_and_stroke_polygon *tuck_flap_masks[:top]
+      end
+        rotate 180, origin: reverse_points[8] do
+          render_box_face reverse_points[8], reverse_points[63],
+                          data['faces']['front']
+        end
+        #fill_color 'ff0000'
+        #fill_rectangle [0,bounds.height],bounds.width, bounds.height
+    end
 
   font_size 150
   # FRONT
@@ -656,61 +701,71 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
     end
   end
 
-  # BACK
-  render_box_face face_points[:back_upper_left], face_points[:back_lower_right],
-                  data['faces']['back']
-  # BOTTOM
-  render_box_face face_points[:bottom_upper_left], face_points[:bottom_lower_right],
-                  data['faces']['bottom']
-  ## LEFT SIDE
-  render_box_face face_points[:left_side_upper_left], face_points[:left_side_lower_right],
-                  data['faces']['left_side']
-  ## RIGHT SIDE
-  render_box_face face_points[:right_side_upper_left], face_points[:right_side_lower_right],
-                  data['faces']['right_side']
-  ## TOP
-  render_box_face face_points[:top_upper_left], face_points[:top_lower_right],
-                  data['faces']['top']
+    # BACK
+    render_box_face face_points[:back_upper_left], face_points[:back_lower_right],
+                    data['faces']['back']
+    # BOTTOM
+    render_box_face face_points[:bottom_upper_left], face_points[:bottom_lower_right],
+                    data['faces']['bottom']
+    ## LEFT SIDE
+    render_box_face face_points[:left_side_upper_left], face_points[:left_side_lower_right],
+                    data['faces']['left_side']
+    ## RIGHT SIDE
+    render_box_face face_points[:right_side_upper_left], face_points[:right_side_lower_right],
+                    data['faces']['right_side']
+    ## TOP
+    render_box_face face_points[:top_upper_left], face_points[:top_lower_right],
+                    data['faces']['top']
 
-  ## SIDE TUCK FLAPS
-  fill_color '0000CC'
-  fill_polygon reverse_points[ 9],
-               reverse_points[ 6],
-               reverse_points[ 5],
-               reverse_points[ 4],
-               reverse_points[ 3],
-               reverse_points[10]
-  fill_polygon reverse_points[25],
-               reverse_points[26],
-               reverse_points[27],
-               reverse_points[28],
-               reverse_points[21],
-               reverse_points[20]
-  if bottom_style == 'tucked'
-    fill_polygon reverse_points[ 2],
-                 reverse_points[54],
-                 reverse_points[55],
-                 reverse_points[56],
-                 reverse_points[57],
-                 reverse_points[13]
-    fill_polygon reverse_points[24],
-                 reverse_points[58],
-                 reverse_points[59],
-                 reverse_points[60],
-                 reverse_points[61],
-                 reverse_points[29]
-  end
+    ## SIDE TUCK FLAPS
+    fill_color '0000CC'
+    # left side
+    fill_polygon reverse_points[ 9],
+                 reverse_points[ 6],
+                 reverse_points[ 5],
+                 reverse_points[ 4],
+                 reverse_points[ 3],
+                 reverse_points[10]
+    # right side
+    fill_polygon reverse_points[25],
+                 reverse_points[26],
+                 reverse_points[27],
+                 reverse_points[28],
+                 reverse_points[21],
+                 reverse_points[20]
+    if bottom_style == 'tucked'
+      # left side
+      fill_polygon reverse_points[ 2],
+                   reverse_points[54],
+                   reverse_points[55],
+                   reverse_points[56],
+                   reverse_points[57],
+                   reverse_points[13]
+      # right side
+      fill_polygon reverse_points[24],
+                   reverse_points[58],
+                   reverse_points[59],
+                   reverse_points[60],
+                   reverse_points[61],
+                   reverse_points[29]
+    else
+      # bottom style glued
+    end
 
 
-  font_size 10
-  fill_color '000000'
-  if data['debug_pints']
-    reverse_points.each_with_index do |p, i|
-      # puts "Reverse Point #{i} = #{p.inspect}"
-      fill_circle p, 3
-      draw_text i, at: p
+    font_size 10
+    fill_color '000000'
+    if data['debug_points']
+      reverse_points.each_with_index do |p, i|
+        # puts "Reverse Point #{i} = #{p.inspect}"
+        fill_circle p, 3
+        draw_text i, at: p
+      end
     end
   end
+
+  bounding_box [9.25.in-2*bounding_box_width,0.5.in+bounding_box_height],
+               width: bounding_box_width, height: bounding_box_height do
+    # stamp 'box_faces'
+  end
 end
-
-
