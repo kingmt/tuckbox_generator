@@ -562,11 +562,91 @@ end
 # draw a ruler so the person looking at the prints can see if shrink to fit was enabled
 # also allows person looking at the prints to make sure the cut lines line up with the images
 def draw_master_edge_ruler
-  # text box 'Master Edge'
-  # draw 2D ruler
-  #   full width across 8.5
-  #   partial across 11
-  # put hash marks on ruler for cm and inch
+    ul = [0, 1.25.in]
+    ur = [0.25.in, 1.25.in]
+    ll = [0, 0.25.in]
+    lr = [0.25.in, 0.25.in]
+    w = 0.25.in
+    h = 1.in
+  rotate 270, origin: [0.25.in, 1.25.in] do
+    text_box 'Master', at: [0.25.in, 1.25.in],
+                     width: 1.in,
+                     height: 0.25.in,
+                     align: :right,
+                     valign: :center,
+                     overflow: :shrink_to_fit
+  end
+  text_box 'Corner', at: [0.25.in,0.25.in],
+                     width: 1.in,
+                     height: 0.25.in,
+                     valign: :center,
+                     overflow: :shrink_to_fit
+
+  vertical_line 0.25.in, 5.in, at: 0.25.in
+    one_inch = 1.in
+    single_cm = 1.cm
+    [2,3,4,5].each do |x|
+      horizontal_line 0.125.in, 0.25.in, at: one_inch * x - 0.5.in
+      distance = one_inch * x - 0.55.in
+      rotate 270, origin: [0.25.in, distance] do
+        text_box "#{x} in", at: [0.25.in, distance],
+                         width: 1.in,
+                         height: 0.25.in,
+                         valign: :center,
+                         overflow: :shrink_to_fit
+      end
+    end
+    [4,6,8,10,12].each do |x|
+      horizontal_line 0.25.in, 0.375.in, at: single_cm * x - 0.5.in
+      distance = single_cm*x - 0.55.in
+      rotate 270, origin: [0.5.in, distance] do
+        text_box "#{x} cm", at: [0.5.in, distance],
+                         width: 1.in,
+                         height: 0.25.in,
+                         valign: :center,
+                         overflow: :shrink_to_fit
+      end
+    end
+  horizontal_line 0.25.in, 5.in, at: 0.25.in
+    [2,3,4,5].each do |x|
+      vertical_line 0.125.in, 0.25.in, at: one_inch * x - 0.5.in
+      text_box "#{x} in", at: [one_inch * x - 0.45.in, 0.25.in],
+                       width: 1.in,
+                       height: 0.25.in,
+                       valign: :center,
+                       overflow: :shrink_to_fit
+    end
+    [4,6,8,10,12].each do |x|
+      vertical_line 0.25.in, 0.375.in, at: single_cm * x - 0.5.in
+      text_box "#{x} cm", at: [( single_cm*x - 0.45.in), 0.5.in],
+                       width: 1.in,
+                       height: 0.25.in,
+                       valign: :center,
+                       overflow: :shrink_to_fit
+    end
+end
+def draw_master_edge_ruler_faces
+    ul = [9.75, 1.25.in]
+    ur = [10.in, 1.25.in]
+    ll = [9.75.in, 0.25.in]
+    lr = [10.in, 0.25.in]
+    w = 0.25.in
+    h = 1.in
+  rotate 90, origin: [9.75.in, 0.25.in] do
+    text_box 'Corner', at: [9.75.in, 0.25.in],
+                     width: 1.in,
+                     height: 0.25.in,
+                     valign: :center,
+                     overflow: :shrink_to_fit
+  end
+  text_box 'Master', at: [8.75.in,0.25.in],
+                     width: 1.in,
+                     height: 0.25.in,
+                     align: :right,
+                     valign: :center,
+                     overflow: :shrink_to_fit
+  vertical_line 0.25.in, 5.in, at: 9.75.in
+  horizontal_line 5.in, 9.75.in, at: 0.25.in
 end
 
 Prawn::Document.generate("../boxes/landscape_#{width}#{unit}x#{height}#{unit}x#{thickness}#{unit}_box.pdf",
@@ -586,6 +666,7 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
   # puts "I think I can fit #{num_boxes} on a page"
 
   # page 1, outline box with cut and fold lines
+  draw_master_edge_ruler
 
   # create bounding box
   bounding_box [0.5.in,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
@@ -652,6 +733,7 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
 
   # page 2 with the images
   start_new_page
+  draw_master_edge_ruler_faces
 
   bounding_box [9.5.in-bounding_box_width,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
     stroke_bounds
