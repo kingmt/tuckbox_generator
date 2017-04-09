@@ -634,7 +634,47 @@ def draw_master_edge_ruler_faces
                      valign: :center,
                      overflow: :shrink_to_fit
   vertical_line 0.25.in, 5.in, at: 9.75.in
+    [2,3,4,5].each do |x|
+      horizontal_line 9.75.in, 9.875.in, at: ONE_INCH * x - 0.5.in
+      distance = ONE_INCH * x - 0.45.in
+      rotate 90, origin: [9.75.in, distance] do
+        text_box "#{x} in", at: [9.75.in, distance],
+                         width: ONE_INCH,
+                         height: 0.25.in,
+                         valign: :center,
+                         overflow: :shrink_to_fit
+      end
+    end
+    [4,6,8,10,12].each do |x|
+      horizontal_line 9.626.in, 9.75.in, at: ONE_CENTIMETER * x - 0.5.in
+      distance = ONE_CENTIMETER*x - 0.45.in
+      rotate 90, origin: [9.5.in, distance] do
+        text_box "#{x} cm", at: [9.5.in, distance],
+                         width: 1.in,
+                         height: 0.25.in,
+                         valign: :center,
+                         overflow: :shrink_to_fit
+      end
+    end
   horizontal_line 5.in, 9.75.in, at: 0.25.in
+    [2,3,4,5].each do |x|
+      vertical_line 0.125.in, 0.25.in, at: 10.5.in - ONE_INCH * x
+      text_box "#{x} in", at: [9.45.in - ONE_INCH * x, 0.25.in],
+                       width: ONE_INCH,
+                       height: 0.25.in,
+                       align: :right,
+                       valign: :center,
+                       overflow: :shrink_to_fit
+    end
+    [4,6,8,10,12].each do |x|
+      vertical_line 0.25.in, 0.375.in, at: 10.5.in - ONE_CENTIMETER * x
+      text_box "#{x} cm", at: [( 9.45.in - ONE_CENTIMETER*x ), 0.5.in],
+                       width: ONE_INCH,
+                       height: 0.25.in,
+                       align: :right,
+                       valign: :center,
+                       overflow: :shrink_to_fit
+    end
 end
 
 Prawn::Document.generate("../boxes/landscape_#{width}#{unit}x#{height}#{unit}x#{thickness}#{unit}_box.pdf",
