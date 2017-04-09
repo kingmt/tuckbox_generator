@@ -66,20 +66,20 @@ margin_x =  0
 right_margin = 720
 margin_y = 0
 margin_y1 = 7.5 * 72
-eighth_inch = 0.125.in
-quarter_inch = 0.25.in
-three_eighths_inch = 0.375.in
-half_inch = 0.5.in
-three_quarter_inch = 0.75.in
-flap_height = if t > three_quarter_inch
-                three_quarter_inch
-              elsif t < quarter_inch
-                quarter_inch
+EIGHTH_INCH = 0.125.in
+QUARTER_INCH = 0.25.in
+THREE_QUARTER_INCH = 0.75.in
+ONE_INCH = 1.in
+ONE_CENTIMETER = 1.cm
+flap_height = if t > THREE_QUARTER_INCH
+                THREE_QUARTER_INCH
+              elsif t < QUARTER_INCH
+                QUARTER_INCH
               else
                 t/2
               end
-tuck_flap_height = if t > three_quarter_inch
-                     three_quarter_inch
+tuck_flap_height = if t > THREE_QUARTER_INCH
+                     THREE_QUARTER_INCH
                    else
                      t - 5
                    end
@@ -107,64 +107,64 @@ reference_starting_y = if bottom_style == 'glued'
                        end
 
 widths[:left_edge] = 0
-widths[:left_edge_tuck_flap_indent] = eighth_inch
-widths[:left_edge_tuck_flap_indent_2] = quarter_inch
+widths[:left_edge_tuck_flap_indent] = EIGHTH_INCH
+widths[:left_edge_tuck_flap_indent_2] = QUARTER_INCH
 widths[:back_face_left_side] = t
-widths[:left_side_flap_cut] = t + quarter_inch
-widths[:right_side_flap_cut] = t + w - quarter_inch
-widths[:left_side_flap_corner] = t + eighth_inch
-widths[:right_side_flap_corner] = t + w - eighth_inch
+widths[:left_side_flap_cut] = t + QUARTER_INCH
+widths[:right_side_flap_cut] = t + w - QUARTER_INCH
+widths[:left_side_flap_corner] = t + EIGHTH_INCH
+widths[:right_side_flap_corner] = t + w - EIGHTH_INCH
 widths[:back_face_right_side] = t + w
-widths[:right_side_tuck_flap_indent] = 2*t + w - quarter_inch
-widths[:right_side_tuck_flap_indent_2] = 2*t + w - eighth_inch
+widths[:right_side_tuck_flap_indent] = 2*t + w - QUARTER_INCH
+widths[:right_side_tuck_flap_indent_2] = 2*t + w - EIGHTH_INCH
 widths[:front_face_left_edge] = 2*t + w
 widths[:front_face_right_edge] = 2*t + 2*w
 widths[:notch_center] = 2*t + 1.5*w
 widths[:side_glue_flap_right_edge] = 3*t + 2*w
-widths[:back_left_side_bottom_flap_glue_point] = eighth_inch
-widths[:back_right_side_bottom_flap_glue_point] = eighth_inch + t + w
-widths[:bottom_glue_flap_glue_point] = eighth_inch + 2*t + w
-widths[:side_glue_flap_glue_point] = 2*t + 2*w + eighth_inch
+widths[:back_left_side_bottom_flap_glue_point] = EIGHTH_INCH
+widths[:back_right_side_bottom_flap_glue_point] = EIGHTH_INCH + t + w
+widths[:bottom_glue_flap_glue_point] = EIGHTH_INCH + 2*t + w
+widths[:side_glue_flap_glue_point] = 2*t + 2*w + EIGHTH_INCH
 
 widths[:reverse_left_edge] = bounding_box_width
-widths[:reverse_left_edge_tuck_flap_indent] = bounding_box_width - eighth_inch
-widths[:reverse_left_edge_tuck_flap_indent_2] = bounding_box_width - quarter_inch
+widths[:reverse_left_edge_tuck_flap_indent] = bounding_box_width - EIGHTH_INCH
+widths[:reverse_left_edge_tuck_flap_indent_2] = bounding_box_width - QUARTER_INCH
 widths[:reverse_back_face_left_side] = bounding_box_width - t
-widths[:reverse_left_side_flap_cut] = bounding_box_width - t - quarter_inch
-widths[:reverse_right_side_flap_cut] = bounding_box_width - t - w + quarter_inch
+widths[:reverse_left_side_flap_cut] = bounding_box_width - t - QUARTER_INCH
+widths[:reverse_right_side_flap_cut] = bounding_box_width - t - w + QUARTER_INCH
 widths[:reverse_back_face_right_side] = bounding_box_width - t - w
-widths[:reverse_right_side_tuck_flap_indent] = bounding_box_width - 2*t - w + quarter_inch
-widths[:reverse_right_side_tuck_flap_indent_2] = bounding_box_width - 2*t - w + eighth_inch
+widths[:reverse_right_side_tuck_flap_indent] = bounding_box_width - 2*t - w + QUARTER_INCH
+widths[:reverse_right_side_tuck_flap_indent_2] = bounding_box_width - 2*t - w + EIGHTH_INCH
 widths[:reverse_front_face_left_edge] = bounding_box_width - 2*t - w
 widths[:reverse_front_face_right_edge] = bounding_box_width - 2*t - 2*w
 widths[:reverse_notch_center] = bounding_box_width - 2*t - 1.5*w
 widths[:reverse_side_glue_flap_right_edge] = bounding_box_width - 3*t - 2*w
-widths[:reverse_back_left_side_bottom_flap_glue_point] = bounding_box_width - eighth_inch
-widths[:reverse_back_right_side_bottom_flap_glue_point] = bounding_box_width - eighth_inch - t - w
-widths[:reverse_bottom_glue_flap_glue_point] = bounding_box_width - eighth_inch - 2*t - w
-widths[:reverse_side_glue_flap_glue_point] = bounding_box_width - 2*t - 2*w - eighth_inch
+widths[:reverse_back_left_side_bottom_flap_glue_point] = bounding_box_width - EIGHTH_INCH
+widths[:reverse_back_right_side_bottom_flap_glue_point] = bounding_box_width - EIGHTH_INCH - t - w
+widths[:reverse_bottom_glue_flap_glue_point] = bounding_box_width - EIGHTH_INCH - 2*t - w
+widths[:reverse_side_glue_flap_glue_point] = bounding_box_width - 2*t - 2*w - EIGHTH_INCH
 
-heights[:glue_patch_on_thickness_sides] = t - quarter_inch
-heights[:glue_patch_on_width_sides] = w - quarter_inch
-heights[:glue_patch_on_height_sides] = h - quarter_inch
+heights[:glue_patch_on_thickness_sides] = t - QUARTER_INCH
+heights[:glue_patch_on_width_sides] = w - QUARTER_INCH
+heights[:glue_patch_on_height_sides] = h - QUARTER_INCH
 
 heights[:bottom_edge] = reference_starting_y - t
 heights[:faces_bottom_edge] = reference_starting_y
-heights[:faces_lower_tuck_flap_fold] = reference_starting_y + h - quarter_inch
+heights[:faces_lower_tuck_flap_fold] = reference_starting_y + h - QUARTER_INCH
 heights[:faces_top_edge] = reference_starting_y + h
-heights[:side_tuck_flap_before_indent_1] = reference_starting_y + h + eighth_inch
-heights[:side_tuck_flap_at_indent_1] = reference_starting_y + h + quarter_inch
+heights[:side_tuck_flap_before_indent_1] = reference_starting_y + h + EIGHTH_INCH
+heights[:side_tuck_flap_at_indent_1] = reference_starting_y + h + QUARTER_INCH
 heights[:side_tuck_flap_at_indent_2] = reference_starting_y + h + tuck_flap_height
 heights[:top_of_top_face] = reference_starting_y + t + h
-heights[:start_tuck_flap_corner_rounding] = reference_starting_y + t + h + flap_height - quarter_inch
+heights[:start_tuck_flap_corner_rounding] = reference_starting_y + t + h + flap_height - QUARTER_INCH
 heights[:top_of_tuck_flap] = reference_starting_y + t + h + flap_height
 heights[:top_of_tuck_flap_face] = reference_starting_y + t + 2*h
-heights[:bottom_glue_flap_glue_point] = reference_starting_y - eighth_inch
-heights[:side_glue_flap_glue_point] = reference_starting_y - eighth_inch + h
+heights[:bottom_glue_flap_glue_point] = reference_starting_y - EIGHTH_INCH
+heights[:side_glue_flap_glue_point] = reference_starting_y - EIGHTH_INCH + h
 heights[:bottom_of_bottom_tuck_flap] = reference_starting_y -t - flap_height
-heights[:start_bottom_tuck_flap_corner_rounding] = reference_starting_y - t - flap_height + quarter_inch
-heights[:bottom_side_tuck_flap_before_indent_1] = reference_starting_y - eighth_inch
-heights[:bottom_side_tuck_flap_at_indent_1] = reference_starting_y - quarter_inch
+heights[:start_bottom_tuck_flap_corner_rounding] = reference_starting_y - t - flap_height + QUARTER_INCH
+heights[:bottom_side_tuck_flap_before_indent_1] = reference_starting_y - EIGHTH_INCH
+heights[:bottom_side_tuck_flap_at_indent_1] = reference_starting_y - QUARTER_INCH
 heights[:bottom_side_tuck_flap_at_indent_2] = reference_starting_y - tuck_flap_height
 
 #points[ 0] = widths[:left_edge], heights[:faces_bottom_edge]
@@ -217,10 +217,10 @@ points[44] = 0,0
 points[45] = 0,0
 #points[44] = widths[:right_side_flap_cut], heights[:start_tuck_flap_corner_rounding]
 #points[45] = widths[:left_side_flap_cut],  heights[:start_tuck_flap_corner_rounding]
-points[46] = widths[:front_face_left_edge]+3,  heights[:faces_lower_tuck_flap_fold]-eighth_inch
-#points[46] = widths[:front_face_left_edge]+eighth_inch,  heights[:faces_lower_tuck_flap_fold]
-points[47] = widths[:back_face_right_side]+3,  heights[:faces_lower_tuck_flap_fold]-eighth_inch
-#points[47] = widths[:back_face_left_side]+eighth_inch,  heights[:faces_top_edge] + eighth_inch
+points[46] = widths[:front_face_left_edge]+3,  heights[:faces_lower_tuck_flap_fold]-EIGHTH_INCH
+#points[46] = widths[:front_face_left_edge]+EIGHTH_INCH,  heights[:faces_lower_tuck_flap_fold]
+points[47] = widths[:back_face_right_side]+3,  heights[:faces_lower_tuck_flap_fold]-EIGHTH_INCH
+#points[47] = widths[:back_face_left_side]+EIGHTH_INCH,  heights[:faces_top_edge] + EIGHTH_INCH
 points[48] = widths[:right_side_flap_cut],  heights[:start_bottom_tuck_flap_corner_rounding]
 points[49] = widths[:left_side_flap_cut],   heights[:start_bottom_tuck_flap_corner_rounding]
 points[50] = widths[:left_side_flap_cut],   heights[:bottom_of_bottom_tuck_flap]
@@ -585,11 +585,9 @@ def draw_master_edge_ruler
                      overflow: :shrink_to_fit
 
   vertical_line 0.25.in, 5.in, at: 0.25.in
-    one_inch = 1.in
-    single_cm = 1.cm
     [2,3,4,5].each do |x|
-      horizontal_line 0.125.in, 0.25.in, at: one_inch * x - 0.5.in
-      distance = one_inch * x - 0.55.in
+      horizontal_line 0.125.in, 0.25.in, at: ONE_INCH * x - 0.5.in
+      distance = ONE_INCH * x - 0.55.in
       rotate 270, origin: [0.25.in, distance] do
         text_box "#{x} in", at: [0.25.in, distance],
                          width: 1.in,
@@ -599,8 +597,8 @@ def draw_master_edge_ruler
       end
     end
     [4,6,8,10,12].each do |x|
-      horizontal_line 0.25.in, 0.375.in, at: single_cm * x - 0.5.in
-      distance = single_cm*x - 0.55.in
+      horizontal_line 0.25.in, 0.375.in, at: ONE_CENTIMETER * x - 0.5.in
+      distance = ONE_CENTIMETER*x - 0.55.in
       rotate 270, origin: [0.5.in, distance] do
         text_box "#{x} cm", at: [0.5.in, distance],
                          width: 1.in,
@@ -611,16 +609,16 @@ def draw_master_edge_ruler
     end
   horizontal_line 0.25.in, 5.in, at: 0.25.in
     [2,3,4,5].each do |x|
-      vertical_line 0.125.in, 0.25.in, at: one_inch * x - 0.5.in
-      text_box "#{x} in", at: [one_inch * x - 0.45.in, 0.25.in],
+      vertical_line 0.125.in, 0.25.in, at: ONE_INCH * x - 0.5.in
+      text_box "#{x} in", at: [ONE_INCH * x - 0.45.in, 0.25.in],
                        width: 1.in,
                        height: 0.25.in,
                        valign: :center,
                        overflow: :shrink_to_fit
     end
     [4,6,8,10,12].each do |x|
-      vertical_line 0.25.in, 0.375.in, at: single_cm * x - 0.5.in
-      text_box "#{x} cm", at: [( single_cm*x - 0.45.in), 0.5.in],
+      vertical_line 0.25.in, 0.375.in, at: ONE_CENTIMETER * x - 0.5.in
+      text_box "#{x} cm", at: [( ONE_CENTIMETER*x - 0.45.in), 0.5.in],
                        width: 1.in,
                        height: 0.25.in,
                        valign: :center,
@@ -663,7 +661,7 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
                      "FFF Tusj"      => { :normal => "../fonts/FFF_Tusj.ttf" }
 
   # how many boxes to draw?
-  gutter = eighth_inch
+  gutter = EIGHTH_INCH
   num_boxes = (720/(bounding_box_width+gutter)).to_i
   # puts "I think I can fit #{num_boxes} on a page"
 
@@ -699,7 +697,7 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
     fill_color 'FFFFFF'
     stroke_color '000000'
     #bounding_box points[33], width: h, height: w do
-     pie_slice points[37], :radius => quarter_inch,
+     pie_slice points[37], :radius => QUARTER_INCH,
                :start_angle => 180, :end_angle => 0
 
     #end
