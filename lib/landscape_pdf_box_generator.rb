@@ -564,12 +564,6 @@ end
 # draw a ruler so the person looking at the prints can see if shrink to fit was enabled
 # also allows person looking at the prints to make sure the cut lines line up with the images
 def draw_master_edge_ruler
-    ul = [0, 1.25.in]
-    ur = [0.25.in, 1.25.in]
-    ll = [0, 0.25.in]
-    lr = [0.25.in, 0.25.in]
-    w = 0.25.in
-    h = 1.in
   rotate 270, origin: [0.25.in, 1.25.in] do
     text_box 'Master', at: [0.25.in, 1.25.in],
                      width: 1.in,
@@ -626,12 +620,6 @@ def draw_master_edge_ruler
     end
 end
 def draw_master_edge_ruler_faces
-    ul = [9.75, 1.25.in]
-    ur = [10.in, 1.25.in]
-    ll = [9.75.in, 0.25.in]
-    lr = [10.in, 0.25.in]
-    w = 0.25.in
-    h = 1.in
   rotate 90, origin: [9.75.in, 0.25.in] do
     text_box 'Corner', at: [9.75.in, 0.25.in],
                      width: 1.in,
