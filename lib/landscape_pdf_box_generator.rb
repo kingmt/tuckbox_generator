@@ -622,13 +622,13 @@ end
 def draw_master_edge_ruler_faces
   rotate 90, origin: [9.75.in, 0.25.in] do
     text_box 'Corner', at: [9.75.in, 0.25.in],
-                     width: 1.in,
+                     width: ONE_INCH,
                      height: 0.25.in,
                      valign: :center,
                      overflow: :shrink_to_fit
   end
   text_box 'Master', at: [8.75.in,0.25.in],
-                     width: 1.in,
+                     width: ONE_INCH,
                      height: 0.25.in,
                      align: :right,
                      valign: :center,
