@@ -35,7 +35,6 @@ if thickness > width
   thickness = data['box']['width']
 end
 unit = data['box']['unit']
-bottom_style = data['box']['bottom_style']
 
 info_data = { 'faces' => {
                 'dimensions' => {
@@ -55,375 +54,365 @@ info_data = { 'faces' => {
                   'text_align' => 'left',
                   'text_valign' => 'top'
                 }
-              }
+              },
+              'box' => {'bottom_style' => data['box']['bottom_style']},
+              'debug_points' => data['debug_points']
             }
 
+measurements = { points: [],
+                 widths: {},
+                 heights: {},
+                 cut_lines: [],
+                 fold_lines: [],
+                 glue_boxes: [],
+                 reverse_points: [],
+                 reverse_cut_lines: [],
+                 face_points: {},
+                 tuck_flap_masks: {}
+               }
 if unit == 'mm'
-  h = height.send :mm
-  w = width.send :mm
-  t = thickness.send :mm
+  measurements[:height_in_points] = height.send :mm
+  measurements[:width_in_points] = width.send :mm
+  measurements[:thickness_in_points] = thickness.send :mm
 else
-  h = height.send :in
-  w = width.send :in
-  t = thickness.send :in
+  measurements[:height_in_points] = height.send :in
+  measurements[:width_in_points] = width.send :in
+  measurements[:thickness_in_points] = thickness.send :in
 end
-margin_x =  0
 
 right_margin = 720
-flap_height = if t > THREE_QUARTER_INCH
-                THREE_QUARTER_INCH
-              elsif t < QUARTER_INCH
-                QUARTER_INCH
-              else
-                t/2
-              end
-tuck_flap_height = if t > THREE_QUARTER_INCH
-                     THREE_QUARTER_INCH
-                   else
-                     t - 5
-                   end
-bounding_box_width = w*2 + t*3
-bounding_box_height = if bottom_style == 'glued'
-                        t*2 + flap_height + h
+measurements[:flap_height] = if measurements[:thickness_in_points] > THREE_QUARTER_INCH
+                               THREE_QUARTER_INCH
+                             elsif measurements[:thickness_in_points] < QUARTER_INCH
+                               QUARTER_INCH
+                             else
+                               measurements[:thickness_in_points]/2
+                             end
+measurements[:tuck_flap_height] = if measurements[:thickness_in_points] > THREE_QUARTER_INCH
+                                    THREE_QUARTER_INCH
+                                  else
+                                    measurements[:thickness_in_points] - 5
+                                  end
+bounding_box_width = measurements[:width_in_points]*2 + measurements[:thickness_in_points]*3
+bounding_box_height = if data['box']['bottom_style'] == 'glued'
+                        measurements[:thickness_in_points]*2 + measurements[:flap_height] + measurements[:height_in_points]
                       else
-                        t*2 + flap_height*2 + h
+                        measurements[:thickness_in_points]*2 + measurements[:flap_height]*2 + measurements[:height_in_points]
                       end
-points = []
-widths = {}
-heights = {}
-cut_lines = []
-fold_lines = []
-glue_boxes = []
-reverse_points = []
-reverse_cut_lines = []
-face_points = {}
+
 
 reference_starting_x = 0
-reference_starting_y = if bottom_style == 'glued'
-                         t
+reference_starting_y = if data['box']['bottom_style'] == 'glued'
+                         measurements[:thickness_in_points]
                        else
-                         t + flap_height
+                         measurements[:thickness_in_points] + measurements[:flap_height]
                        end
 
-widths[:left_edge] = 0
-widths[:left_edge_tuck_flap_indent] = EIGHTH_INCH
-widths[:left_edge_tuck_flap_indent_2] = QUARTER_INCH
-widths[:back_face_left_side] = t
-widths[:left_side_flap_cut] = t + QUARTER_INCH
-widths[:right_side_flap_cut] = t + w - QUARTER_INCH
-widths[:left_side_flap_corner] = t + EIGHTH_INCH
-widths[:right_side_flap_corner] = t + w - EIGHTH_INCH
-widths[:back_face_right_side] = t + w
-widths[:right_side_tuck_flap_indent] = 2*t + w - QUARTER_INCH
-widths[:right_side_tuck_flap_indent_2] = 2*t + w - EIGHTH_INCH
-widths[:front_face_left_edge] = 2*t + w
-widths[:front_face_right_edge] = 2*t + 2*w
-widths[:notch_center] = 2*t + 1.5*w
-widths[:side_glue_flap_right_edge] = 3*t + 2*w
-widths[:back_left_side_bottom_flap_glue_point] = EIGHTH_INCH
-widths[:back_right_side_bottom_flap_glue_point] = EIGHTH_INCH + t + w
-widths[:bottom_glue_flap_glue_point] = EIGHTH_INCH + 2*t + w
-widths[:side_glue_flap_glue_point] = 2*t + 2*w + EIGHTH_INCH
+measurements[:widths][:left_edge] = 0
+measurements[:widths][:left_edge_tuck_flap_indent] = EIGHTH_INCH
+measurements[:widths][:left_edge_tuck_flap_indent_2] = QUARTER_INCH
+measurements[:widths][:back_face_left_side] = measurements[:thickness_in_points]
+measurements[:widths][:left_side_flap_cut] = measurements[:thickness_in_points] + QUARTER_INCH
+measurements[:widths][:right_side_flap_cut] = measurements[:thickness_in_points] + measurements[:width_in_points] - QUARTER_INCH
+measurements[:widths][:left_side_flap_corner] = measurements[:thickness_in_points] + EIGHTH_INCH
+measurements[:widths][:right_side_flap_corner] = measurements[:thickness_in_points] + measurements[:width_in_points] - EIGHTH_INCH
+measurements[:widths][:back_face_right_side] = measurements[:thickness_in_points] + measurements[:width_in_points]
+measurements[:widths][:right_side_tuck_flap_indent] = 2*measurements[:thickness_in_points] + measurements[:width_in_points] - QUARTER_INCH
+measurements[:widths][:right_side_tuck_flap_indent_2] = 2*measurements[:thickness_in_points] + measurements[:width_in_points] - EIGHTH_INCH
+measurements[:widths][:front_face_left_edge] = 2*measurements[:thickness_in_points] + measurements[:width_in_points]
+measurements[:widths][:front_face_right_edge] = 2*measurements[:thickness_in_points] + 2*measurements[:width_in_points]
+measurements[:widths][:notch_center] = 2*measurements[:thickness_in_points] + 1.5*measurements[:width_in_points]
+measurements[:widths][:side_glue_flap_right_edge] = 3*measurements[:thickness_in_points] + 2*measurements[:width_in_points]
+measurements[:widths][:back_left_side_bottom_flap_glue_point] = EIGHTH_INCH
+measurements[:widths][:back_right_side_bottom_flap_glue_point] = EIGHTH_INCH + measurements[:thickness_in_points] + measurements[:width_in_points]
+measurements[:widths][:bottom_glue_flap_glue_point] = EIGHTH_INCH + 2*measurements[:thickness_in_points] + measurements[:width_in_points]
+measurements[:widths][:side_glue_flap_glue_point] = 2*measurements[:thickness_in_points] + 2*measurements[:width_in_points] + EIGHTH_INCH
+measurements[:widths][:reverse_left_edge] = bounding_box_width
+measurements[:widths][:reverse_left_edge_tuck_flap_indent] = bounding_box_width - EIGHTH_INCH
+measurements[:widths][:reverse_left_edge_tuck_flap_indent_2] = bounding_box_width - QUARTER_INCH
+measurements[:widths][:reverse_back_face_left_side] = bounding_box_width - measurements[:thickness_in_points]
+measurements[:widths][:reverse_left_side_flap_cut] = bounding_box_width - measurements[:thickness_in_points] - QUARTER_INCH
+measurements[:widths][:reverse_right_side_flap_cut] = bounding_box_width - measurements[:thickness_in_points] - measurements[:width_in_points] + QUARTER_INCH
+measurements[:widths][:reverse_back_face_right_side] = bounding_box_width - measurements[:thickness_in_points] - measurements[:width_in_points]
+measurements[:widths][:reverse_right_side_tuck_flap_indent] = bounding_box_width - 2*measurements[:thickness_in_points] - measurements[:width_in_points] + QUARTER_INCH
+measurements[:widths][:reverse_right_side_tuck_flap_indent_2] = bounding_box_width - 2*measurements[:thickness_in_points] - measurements[:width_in_points] + EIGHTH_INCH
+measurements[:widths][:reverse_front_face_left_edge] = bounding_box_width - 2*measurements[:thickness_in_points] - measurements[:width_in_points]
+measurements[:widths][:reverse_front_face_right_edge] = bounding_box_width - 2*measurements[:thickness_in_points] - 2*measurements[:width_in_points]
+measurements[:widths][:reverse_notch_center] = bounding_box_width - 2*measurements[:thickness_in_points] - 1.5*measurements[:width_in_points]
+measurements[:widths][:reverse_side_glue_flap_right_edge] = bounding_box_width - 3*measurements[:thickness_in_points] - 2*measurements[:width_in_points]
+measurements[:widths][:reverse_back_left_side_bottom_flap_glue_point] = bounding_box_width - EIGHTH_INCH
+measurements[:widths][:reverse_back_right_side_bottom_flap_glue_point] = bounding_box_width - EIGHTH_INCH - measurements[:thickness_in_points] - measurements[:width_in_points]
+measurements[:widths][:reverse_bottom_glue_flap_glue_point] = bounding_box_width - EIGHTH_INCH - 2*measurements[:thickness_in_points] - measurements[:width_in_points]
+measurements[:widths][:reverse_side_glue_flap_glue_point] = bounding_box_width - 2*measurements[:thickness_in_points] - 2*measurements[:width_in_points] - EIGHTH_INCH
 
-widths[:reverse_left_edge] = bounding_box_width
-widths[:reverse_left_edge_tuck_flap_indent] = bounding_box_width - EIGHTH_INCH
-widths[:reverse_left_edge_tuck_flap_indent_2] = bounding_box_width - QUARTER_INCH
-widths[:reverse_back_face_left_side] = bounding_box_width - t
-widths[:reverse_left_side_flap_cut] = bounding_box_width - t - QUARTER_INCH
-widths[:reverse_right_side_flap_cut] = bounding_box_width - t - w + QUARTER_INCH
-widths[:reverse_back_face_right_side] = bounding_box_width - t - w
-widths[:reverse_right_side_tuck_flap_indent] = bounding_box_width - 2*t - w + QUARTER_INCH
-widths[:reverse_right_side_tuck_flap_indent_2] = bounding_box_width - 2*t - w + EIGHTH_INCH
-widths[:reverse_front_face_left_edge] = bounding_box_width - 2*t - w
-widths[:reverse_front_face_right_edge] = bounding_box_width - 2*t - 2*w
-widths[:reverse_notch_center] = bounding_box_width - 2*t - 1.5*w
-widths[:reverse_side_glue_flap_right_edge] = bounding_box_width - 3*t - 2*w
-widths[:reverse_back_left_side_bottom_flap_glue_point] = bounding_box_width - EIGHTH_INCH
-widths[:reverse_back_right_side_bottom_flap_glue_point] = bounding_box_width - EIGHTH_INCH - t - w
-widths[:reverse_bottom_glue_flap_glue_point] = bounding_box_width - EIGHTH_INCH - 2*t - w
-widths[:reverse_side_glue_flap_glue_point] = bounding_box_width - 2*t - 2*w - EIGHTH_INCH
-
-heights[:glue_patch_on_thickness_sides] = t - QUARTER_INCH
-heights[:glue_patch_on_width_sides] = w - QUARTER_INCH
-heights[:glue_patch_on_height_sides] = h - QUARTER_INCH
-
-heights[:bottom_edge] = reference_starting_y - t
-heights[:faces_bottom_edge] = reference_starting_y
-heights[:faces_lower_tuck_flap_fold] = reference_starting_y + h - QUARTER_INCH
-heights[:faces_top_edge] = reference_starting_y + h
-heights[:side_tuck_flap_before_indent_1] = reference_starting_y + h + EIGHTH_INCH
-heights[:side_tuck_flap_at_indent_1] = reference_starting_y + h + QUARTER_INCH
-heights[:side_tuck_flap_at_indent_2] = reference_starting_y + h + tuck_flap_height
-heights[:top_of_top_face] = reference_starting_y + t + h
-heights[:start_tuck_flap_corner_rounding] = reference_starting_y + t + h + flap_height - QUARTER_INCH
-heights[:top_of_tuck_flap] = reference_starting_y + t + h + flap_height
-heights[:top_of_tuck_flap_face] = reference_starting_y + t + 2*h
-heights[:bottom_glue_flap_glue_point] = reference_starting_y - EIGHTH_INCH
-heights[:side_glue_flap_glue_point] = reference_starting_y - EIGHTH_INCH + h
-heights[:bottom_of_bottom_tuck_flap] = reference_starting_y -t - flap_height
-heights[:start_bottom_tuck_flap_corner_rounding] = reference_starting_y - t - flap_height + QUARTER_INCH
-heights[:bottom_side_tuck_flap_before_indent_1] = reference_starting_y - EIGHTH_INCH
-heights[:bottom_side_tuck_flap_at_indent_1] = reference_starting_y - QUARTER_INCH
-heights[:bottom_side_tuck_flap_at_indent_2] = reference_starting_y - tuck_flap_height
+measurements[:heights][:glue_patch_on_thickness_sides] = measurements[:thickness_in_points] - QUARTER_INCH
+measurements[:heights][:glue_patch_on_width_sides] = measurements[:width_in_points] - QUARTER_INCH
+measurements[:heights][:glue_patch_on_height_sides] = measurements[:height_in_points] - QUARTER_INCH
+measurements[:heights][:bottom_edge] = reference_starting_y - measurements[:thickness_in_points]
+measurements[:heights][:faces_bottom_edge] = reference_starting_y
+measurements[:heights][:faces_lower_tuck_flap_fold] = reference_starting_y + measurements[:height_in_points] - QUARTER_INCH
+measurements[:heights][:faces_top_edge] = reference_starting_y + measurements[:height_in_points]
+measurements[:heights][:side_tuck_flap_before_indent_1] = reference_starting_y + measurements[:height_in_points] + EIGHTH_INCH
+measurements[:heights][:side_tuck_flap_at_indent_1] = reference_starting_y + measurements[:height_in_points] + QUARTER_INCH
+measurements[:heights][:side_tuck_flap_at_indent_2] = reference_starting_y + measurements[:height_in_points] + measurements[:tuck_flap_height]
+measurements[:heights][:top_of_top_face] = reference_starting_y + measurements[:thickness_in_points] + measurements[:height_in_points]
+measurements[:heights][:start_tuck_flap_corner_rounding] = reference_starting_y + measurements[:thickness_in_points] + measurements[:height_in_points] + measurements[:flap_height] - QUARTER_INCH
+measurements[:heights][:top_of_tuck_flap] = reference_starting_y + measurements[:thickness_in_points] + measurements[:height_in_points] + measurements[:flap_height]
+measurements[:heights][:top_of_tuck_flap_face] = reference_starting_y + measurements[:thickness_in_points] + 2*measurements[:height_in_points]
+measurements[:heights][:bottom_glue_flap_glue_point] = reference_starting_y - EIGHTH_INCH
+measurements[:heights][:side_glue_flap_glue_point] = reference_starting_y - EIGHTH_INCH + measurements[:height_in_points]
+measurements[:heights][:bottom_of_bottom_tuck_flap] = reference_starting_y -measurements[:thickness_in_points] - measurements[:flap_height]
+measurements[:heights][:start_bottom_tuck_flap_corner_rounding] = reference_starting_y - measurements[:thickness_in_points] - measurements[:flap_height] + QUARTER_INCH
+measurements[:heights][:bottom_side_tuck_flap_before_indent_1] = reference_starting_y - EIGHTH_INCH
+measurements[:heights][:bottom_side_tuck_flap_at_indent_1] = reference_starting_y - QUARTER_INCH
+measurements[:heights][:bottom_side_tuck_flap_at_indent_2] = reference_starting_y - measurements[:tuck_flap_height]
 
 #points[ 0] = widths[:left_edge], heights[:faces_bottom_edge]
-points[ 0] = 0, 0
-points[ 1] = widths[:left_edge], heights[:bottom_edge]
-points[ 2] = widths[:left_edge], heights[:faces_bottom_edge]
-points[ 3] = widths[:left_edge], heights[:faces_top_edge]
-points[ 4] = widths[:left_edge], heights[:side_tuck_flap_before_indent_1]
-points[ 5] = widths[:left_edge_tuck_flap_indent],   heights[:side_tuck_flap_at_indent_1]
-points[ 6] = widths[:left_edge_tuck_flap_indent_2], heights[:side_tuck_flap_at_indent_2]
-points[ 7] = widths[:back_face_left_side], heights[:start_tuck_flap_corner_rounding]
-points[ 8] = widths[:back_face_left_side], heights[:top_of_top_face]
-points[ 9] = widths[:back_face_left_side], heights[:side_tuck_flap_at_indent_2]
-points[10] = widths[:back_face_left_side], heights[:faces_top_edge]
-points[11] = widths[:left_side_flap_cut], heights[:bottom_edge]
-points[12] = widths[:back_face_left_side], heights[:bottom_edge]
-points[13] = widths[:back_face_left_side], heights[:faces_bottom_edge]
-points[14] = widths[:left_side_flap_cut], heights[:top_of_tuck_flap]
-points[15] = widths[:left_side_flap_cut], heights[:top_of_top_face]
-points[16] = widths[:right_side_flap_cut], heights[:top_of_tuck_flap]
-points[17] = widths[:right_side_flap_cut], heights[:top_of_top_face]
-points[18] = widths[:back_face_right_side], heights[:start_tuck_flap_corner_rounding]
-points[19] = widths[:back_face_right_side], heights[:top_of_top_face]
-points[20] = widths[:back_face_right_side], heights[:side_tuck_flap_at_indent_2]
-points[21] = widths[:back_face_right_side], heights[:faces_top_edge]
-points[22] = widths[:right_side_flap_cut], heights[:bottom_edge]
-points[23] = widths[:back_face_right_side], heights[:bottom_edge]
-points[24] = widths[:back_face_right_side], heights[:faces_bottom_edge]
-points[25] = widths[:right_side_tuck_flap_indent], heights[:side_tuck_flap_at_indent_2]
-points[26] = widths[:right_side_tuck_flap_indent_2], heights[:side_tuck_flap_at_indent_1]
-points[27] = widths[:front_face_left_edge], heights[:side_tuck_flap_before_indent_1]
-points[28] = widths[:front_face_left_edge], heights[:faces_top_edge]
-points[29] = widths[:front_face_left_edge], heights[:faces_bottom_edge]
-points[30] = widths[:front_face_left_edge], heights[:bottom_edge]
-#points[31] = widths[:front_face_left_edge], heights[:bottom_edge]
-points[31] = widths[:front_face_left_edge], 0
-points[32] = widths[:front_face_right_edge], heights[:faces_top_edge]
-points[33] = widths[:front_face_right_edge], heights[:faces_bottom_edge]
-points[34] = widths[:front_face_right_edge], heights[:bottom_edge]
-points[35] = widths[:side_glue_flap_right_edge], heights[:faces_top_edge]
-points[36] = widths[:side_glue_flap_right_edge], heights[:faces_bottom_edge]
-points[37] = widths[:notch_center], heights[:faces_top_edge]
-points[38] = widths[:back_left_side_bottom_flap_glue_point] , heights[:bottom_glue_flap_glue_point]
-points[39] = widths[:back_right_side_bottom_flap_glue_point], heights[:bottom_glue_flap_glue_point]
-points[40] = widths[:bottom_glue_flap_glue_point]           , heights[:bottom_glue_flap_glue_point]
-points[41] = widths[:side_glue_flap_glue_point]             , heights[:side_glue_flap_glue_point]
-points[42] = widths[:back_face_right_side], heights[:faces_lower_tuck_flap_fold]
-points[43] = widths[:back_face_left_side],  heights[:faces_lower_tuck_flap_fold]
-points[44] = 0,0
-points[45] = 0,0
-#points[44] = widths[:right_side_flap_cut], heights[:start_tuck_flap_corner_rounding]
-#points[45] = widths[:left_side_flap_cut],  heights[:start_tuck_flap_corner_rounding]
-points[46] = widths[:front_face_left_edge]+3,  heights[:faces_lower_tuck_flap_fold]-EIGHTH_INCH
-#points[46] = widths[:front_face_left_edge]+EIGHTH_INCH,  heights[:faces_lower_tuck_flap_fold]
-points[47] = widths[:back_face_right_side]+3,  heights[:faces_lower_tuck_flap_fold]-EIGHTH_INCH
-#points[47] = widths[:back_face_left_side]+EIGHTH_INCH,  heights[:faces_top_edge] + EIGHTH_INCH
-points[48] = widths[:right_side_flap_cut],  heights[:start_bottom_tuck_flap_corner_rounding]
-points[49] = widths[:left_side_flap_cut],   heights[:start_bottom_tuck_flap_corner_rounding]
-points[50] = widths[:left_side_flap_cut],   heights[:bottom_of_bottom_tuck_flap]
-points[51] = widths[:right_side_flap_cut],  heights[:bottom_of_bottom_tuck_flap]
-points[52] = widths[:back_face_right_side], heights[:start_bottom_tuck_flap_corner_rounding]
-points[53] = widths[:back_face_left_side],  heights[:start_bottom_tuck_flap_corner_rounding]
+measurements[:points][ 0] = 0, 0
+measurements[:points][ 1] = measurements[:widths][:left_edge], measurements[:heights][:bottom_edge]
+measurements[:points][ 2] = measurements[:widths][:left_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:points][ 3] = measurements[:widths][:left_edge], measurements[:heights][:faces_top_edge]
+measurements[:points][ 4] = measurements[:widths][:left_edge], measurements[:heights][:side_tuck_flap_before_indent_1]
+measurements[:points][ 5] = measurements[:widths][:left_edge_tuck_flap_indent],   measurements[:heights][:side_tuck_flap_at_indent_1]
+measurements[:points][ 6] = measurements[:widths][:left_edge_tuck_flap_indent_2], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:points][ 7] = measurements[:widths][:back_face_left_side], measurements[:heights][:start_tuck_flap_corner_rounding]
+measurements[:points][ 8] = measurements[:widths][:back_face_left_side], measurements[:heights][:top_of_top_face]
+measurements[:points][ 9] = measurements[:widths][:back_face_left_side], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:points][10] = measurements[:widths][:back_face_left_side], measurements[:heights][:faces_top_edge]
+measurements[:points][11] = measurements[:widths][:left_side_flap_cut], measurements[:heights][:bottom_edge]
+measurements[:points][12] = measurements[:widths][:back_face_left_side], measurements[:heights][:bottom_edge]
+measurements[:points][13] = measurements[:widths][:back_face_left_side], measurements[:heights][:faces_bottom_edge]
+measurements[:points][14] = measurements[:widths][:left_side_flap_cut], measurements[:heights][:top_of_tuck_flap]
+measurements[:points][15] = measurements[:widths][:left_side_flap_cut], measurements[:heights][:top_of_top_face]
+measurements[:points][16] = measurements[:widths][:right_side_flap_cut], measurements[:heights][:top_of_tuck_flap]
+measurements[:points][17] = measurements[:widths][:right_side_flap_cut], measurements[:heights][:top_of_top_face]
+measurements[:points][18] = measurements[:widths][:back_face_right_side], measurements[:heights][:start_tuck_flap_corner_rounding]
+measurements[:points][19] = measurements[:widths][:back_face_right_side], measurements[:heights][:top_of_top_face]
+measurements[:points][20] = measurements[:widths][:back_face_right_side], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:points][21] = measurements[:widths][:back_face_right_side], measurements[:heights][:faces_top_edge]
+measurements[:points][22] = measurements[:widths][:right_side_flap_cut], measurements[:heights][:bottom_edge]
+measurements[:points][23] = measurements[:widths][:back_face_right_side], measurements[:heights][:bottom_edge]
+measurements[:points][24] = measurements[:widths][:back_face_right_side], measurements[:heights][:faces_bottom_edge]
+measurements[:points][25] = measurements[:widths][:right_side_tuck_flap_indent], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:points][26] = measurements[:widths][:right_side_tuck_flap_indent_2], measurements[:heights][:side_tuck_flap_at_indent_1]
+measurements[:points][27] = measurements[:widths][:front_face_left_edge], measurements[:heights][:side_tuck_flap_before_indent_1]
+measurements[:points][28] = measurements[:widths][:front_face_left_edge], measurements[:heights][:faces_top_edge]
+measurements[:points][29] = measurements[:widths][:front_face_left_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:points][30] = measurements[:widths][:front_face_left_edge], measurements[:heights][:bottom_edge]
+measurements[:points][31] = measurements[:widths][:front_face_left_edge], 0
+measurements[:points][32] = measurements[:widths][:front_face_right_edge], measurements[:heights][:faces_top_edge]
+measurements[:points][33] = measurements[:widths][:front_face_right_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:points][34] = measurements[:widths][:front_face_right_edge], measurements[:heights][:bottom_edge]
+measurements[:points][35] = measurements[:widths][:side_glue_flap_right_edge], measurements[:heights][:faces_top_edge]
+measurements[:points][36] = measurements[:widths][:side_glue_flap_right_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:points][37] = measurements[:widths][:notch_center], measurements[:heights][:faces_top_edge]
+measurements[:points][38] = measurements[:widths][:back_left_side_bottom_flap_glue_point] , measurements[:heights][:bottom_glue_flap_glue_point]
+measurements[:points][39] = measurements[:widths][:back_right_side_bottom_flap_glue_point], measurements[:heights][:bottom_glue_flap_glue_point]
+measurements[:points][40] = measurements[:widths][:bottom_glue_flap_glue_point]           , measurements[:heights][:bottom_glue_flap_glue_point]
+measurements[:points][41] = measurements[:widths][:side_glue_flap_glue_point]             , measurements[:heights][:side_glue_flap_glue_point]
+measurements[:points][42] = measurements[:widths][:back_face_right_side], measurements[:heights][:faces_lower_tuck_flap_fold]
+measurements[:points][43] = measurements[:widths][:back_face_left_side],  measurements[:heights][:faces_lower_tuck_flap_fold]
+measurements[:points][44] = 0,0
+measurements[:points][45] = 0,0
+measurements[:points][46] = measurements[:widths][:front_face_left_edge]+3,  measurements[:heights][:faces_lower_tuck_flap_fold]-EIGHTH_INCH
+measurements[:points][47] = measurements[:widths][:back_face_right_side]+3,  measurements[:heights][:faces_lower_tuck_flap_fold]-EIGHTH_INCH
+measurements[:points][48] = measurements[:widths][:right_side_flap_cut],  measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:points][49] = measurements[:widths][:left_side_flap_cut],   measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:points][50] = measurements[:widths][:left_side_flap_cut],   measurements[:heights][:bottom_of_bottom_tuck_flap]
+measurements[:points][51] = measurements[:widths][:right_side_flap_cut],  measurements[:heights][:bottom_of_bottom_tuck_flap]
+measurements[:points][52] = measurements[:widths][:back_face_right_side], measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:points][53] = measurements[:widths][:back_face_left_side],  measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:points][54] = measurements[:widths][:left_edge],                     measurements[:heights][:bottom_side_tuck_flap_before_indent_1]
+measurements[:points][55] = measurements[:widths][:left_edge_tuck_flap_indent],    measurements[:heights][:bottom_side_tuck_flap_at_indent_1]
+measurements[:points][56] = measurements[:widths][:left_edge_tuck_flap_indent_2],  measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:points][57] = measurements[:widths][:back_face_left_side],           measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:points][58] = measurements[:widths][:back_face_right_side],          measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:points][59] = measurements[:widths][:right_side_tuck_flap_indent],   measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:points][60] = measurements[:widths][:right_side_tuck_flap_indent_2], measurements[:heights][:bottom_side_tuck_flap_at_indent_1]
+measurements[:points][61] = measurements[:widths][:front_face_left_edge],          measurements[:heights][:bottom_side_tuck_flap_before_indent_1]
 
-points[54] = widths[:left_edge],                     heights[:bottom_side_tuck_flap_before_indent_1]
-points[55] = widths[:left_edge_tuck_flap_indent],    heights[:bottom_side_tuck_flap_at_indent_1]
-points[56] = widths[:left_edge_tuck_flap_indent_2],  heights[:bottom_side_tuck_flap_at_indent_2]
-points[57] = widths[:back_face_left_side],           heights[:bottom_side_tuck_flap_at_indent_2]
-points[58] = widths[:back_face_right_side],          heights[:bottom_side_tuck_flap_at_indent_2]
-points[59] = widths[:right_side_tuck_flap_indent],   heights[:bottom_side_tuck_flap_at_indent_2]
-points[60] = widths[:right_side_tuck_flap_indent_2], heights[:bottom_side_tuck_flap_at_indent_1]
-points[61] = widths[:front_face_left_edge],          heights[:bottom_side_tuck_flap_before_indent_1]
-
-
-
-
-reverse_points[ 0] = widths[:reverse_left_edge], heights[:bottom_edge]
-reverse_points[ 1] = widths[:reverse_left_edge], heights[:bottom_edge]
-reverse_points[ 2] = widths[:reverse_left_edge], heights[:faces_bottom_edge]
-reverse_points[ 3] = widths[:reverse_left_edge], heights[:faces_top_edge]
-reverse_points[ 4] = widths[:reverse_left_edge], heights[:side_tuck_flap_before_indent_1]
-reverse_points[ 5] = widths[:reverse_left_edge_tuck_flap_indent],   heights[:side_tuck_flap_at_indent_1]
-reverse_points[ 6] = widths[:reverse_left_edge_tuck_flap_indent_2], heights[:side_tuck_flap_at_indent_2]
-reverse_points[ 7] = widths[:reverse_back_face_left_side], heights[:start_tuck_flap_corner_rounding]
-reverse_points[ 8] = widths[:reverse_back_face_left_side], heights[:top_of_top_face]
-reverse_points[ 9] = widths[:reverse_back_face_left_side], heights[:side_tuck_flap_at_indent_2]
-reverse_points[10] = widths[:reverse_back_face_left_side], heights[:faces_top_edge]
-reverse_points[11] = widths[:reverse_back_face_left_side], heights[:bottom_edge]
-reverse_points[12] = widths[:reverse_back_face_left_side], heights[:bottom_edge]
-reverse_points[13] = widths[:reverse_back_face_left_side], heights[:faces_bottom_edge]
-reverse_points[14] = widths[:reverse_left_side_flap_cut], heights[:top_of_tuck_flap]
-reverse_points[15] = widths[:reverse_left_side_flap_cut], heights[:top_of_top_face]
-reverse_points[16] = widths[:reverse_right_side_flap_cut], heights[:top_of_tuck_flap]
-reverse_points[17] = widths[:reverse_right_side_flap_cut], heights[:top_of_top_face]
-reverse_points[18] = widths[:reverse_back_face_right_side], heights[:start_tuck_flap_corner_rounding]
-reverse_points[19] = widths[:reverse_back_face_right_side], heights[:top_of_top_face]
-reverse_points[20] = widths[:reverse_back_face_right_side], heights[:side_tuck_flap_at_indent_2]
-reverse_points[21] = widths[:reverse_back_face_right_side], heights[:faces_top_edge]
-reverse_points[22] = widths[:reverse_back_face_right_side], heights[:bottom_edge]
-reverse_points[23] = widths[:reverse_back_face_right_side], heights[:bottom_edge]
-reverse_points[24] = widths[:reverse_back_face_right_side], heights[:faces_bottom_edge]
-reverse_points[25] = widths[:reverse_right_side_tuck_flap_indent], heights[:side_tuck_flap_at_indent_2]
-reverse_points[26] = widths[:reverse_right_side_tuck_flap_indent_2], heights[:side_tuck_flap_at_indent_1]
-reverse_points[27] = widths[:reverse_front_face_left_edge], heights[:side_tuck_flap_before_indent_1]
-reverse_points[28] = widths[:reverse_front_face_left_edge], heights[:faces_top_edge]
-reverse_points[29] = widths[:reverse_front_face_left_edge], heights[:faces_bottom_edge]
-reverse_points[30] = widths[:reverse_front_face_left_edge], heights[:bottom_edge]
-reverse_points[31] = widths[:reverse_front_face_left_edge], heights[:bottom_edge]
-reverse_points[32] = widths[:reverse_front_face_right_edge], heights[:faces_top_edge]
-reverse_points[33] = widths[:reverse_front_face_right_edge], heights[:faces_bottom_edge]
-reverse_points[34] = widths[:reverse_front_face_right_edge], heights[:bottom_edge]
-reverse_points[35] = widths[:reverse_side_glue_flap_right_edge], heights[:faces_top_edge]
-reverse_points[36] = widths[:reverse_side_glue_flap_right_edge], heights[:faces_bottom_edge]
-reverse_points[37] = widths[:reverse_notch_center], heights[:faces_top_edge]
-reverse_points[38] = widths[:reverse_back_left_side_bottom_flap_glue_point] , heights[:bottom_glue_flap_glue_point]
-reverse_points[39] = widths[:reverse_back_right_side_bottom_flap_glue_point], heights[:bottom_glue_flap_glue_point]
-reverse_points[40] = widths[:reverse_bottom_glue_flap_glue_point]           , heights[:bottom_glue_flap_glue_point]
-reverse_points[41] = widths[:reverse_side_glue_flap_glue_point]             , heights[:side_glue_flap_glue_point]
-reverse_points[42] = widths[:reverse_back_face_right_side], heights[:faces_lower_tuck_flap_fold]
-reverse_points[43] = widths[:reverse_back_face_left_side],  heights[:faces_lower_tuck_flap_fold]
-reverse_points[44] = widths[:reverse_right_side_flap_cut], heights[:start_tuck_flap_corner_rounding]
-reverse_points[45] = widths[:reverse_left_side_flap_cut],  heights[:start_tuck_flap_corner_rounding]
-reverse_points[46] = widths[:reverse_back_face_left_side],  heights[:top_of_tuck_flap]
-reverse_points[47] = widths[:reverse_back_face_right_side],  heights[:top_of_tuck_flap_face]
-reverse_points[48] = widths[:reverse_right_side_flap_cut],  heights[:start_bottom_tuck_flap_corner_rounding]
-reverse_points[49] = widths[:reverse_left_side_flap_cut],   heights[:start_bottom_tuck_flap_corner_rounding]
-reverse_points[50] = widths[:reverse_left_side_flap_cut],   heights[:bottom_of_bottom_tuck_flap]
-reverse_points[51] = widths[:reverse_right_side_flap_cut],  heights[:bottom_of_bottom_tuck_flap]
-reverse_points[52] = widths[:reverse_back_face_right_side], heights[:start_bottom_tuck_flap_corner_rounding]
-reverse_points[53] = widths[:reverse_back_face_left_side],  heights[:start_bottom_tuck_flap_corner_rounding]
-reverse_points[54] = widths[:reverse_left_edge],                     heights[:bottom_side_tuck_flap_before_indent_1]
-reverse_points[55] = widths[:reverse_left_edge_tuck_flap_indent],    heights[:bottom_side_tuck_flap_at_indent_1]
-reverse_points[56] = widths[:reverse_left_edge_tuck_flap_indent_2],  heights[:bottom_side_tuck_flap_at_indent_2]
-reverse_points[57] = widths[:reverse_back_face_left_side],           heights[:bottom_side_tuck_flap_at_indent_2]
-reverse_points[58] = widths[:reverse_back_face_right_side],          heights[:bottom_side_tuck_flap_at_indent_2]
-reverse_points[59] = widths[:reverse_right_side_tuck_flap_indent],   heights[:bottom_side_tuck_flap_at_indent_2]
-reverse_points[60] = widths[:reverse_right_side_tuck_flap_indent_2], heights[:bottom_side_tuck_flap_at_indent_1]
-reverse_points[61] = widths[:reverse_front_face_left_edge],          heights[:bottom_side_tuck_flap_before_indent_1]
-reverse_points[62] = widths[:reverse_back_face_right_side] - w, heights[:bottom_edge] + h
-reverse_points[63] = widths[:reverse_back_face_left_side] + w, heights[:top_of_top_face] - h
+measurements[:reverse_points][ 0] = measurements[:widths][:reverse_left_edge], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][ 1] = measurements[:widths][:reverse_left_edge], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][ 2] = measurements[:widths][:reverse_left_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:reverse_points][ 3] = measurements[:widths][:reverse_left_edge], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][ 4] = measurements[:widths][:reverse_left_edge], measurements[:heights][:side_tuck_flap_before_indent_1]
+measurements[:reverse_points][ 5] = measurements[:widths][:reverse_left_edge_tuck_flap_indent],   measurements[:heights][:side_tuck_flap_at_indent_1]
+measurements[:reverse_points][ 6] = measurements[:widths][:reverse_left_edge_tuck_flap_indent_2], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:reverse_points][ 7] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:start_tuck_flap_corner_rounding]
+measurements[:reverse_points][ 8] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:top_of_top_face]
+measurements[:reverse_points][ 9] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:reverse_points][10] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][11] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][12] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][13] = measurements[:widths][:reverse_back_face_left_side], measurements[:heights][:faces_bottom_edge]
+measurements[:reverse_points][14] = measurements[:widths][:reverse_left_side_flap_cut], measurements[:heights][:top_of_tuck_flap]
+measurements[:reverse_points][15] = measurements[:widths][:reverse_left_side_flap_cut], measurements[:heights][:top_of_top_face]
+measurements[:reverse_points][16] = measurements[:widths][:reverse_right_side_flap_cut], measurements[:heights][:top_of_tuck_flap]
+measurements[:reverse_points][17] = measurements[:widths][:reverse_right_side_flap_cut], measurements[:heights][:top_of_top_face]
+measurements[:reverse_points][18] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:start_tuck_flap_corner_rounding]
+measurements[:reverse_points][19] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:top_of_top_face]
+measurements[:reverse_points][20] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:reverse_points][21] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][22] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][23] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][24] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:faces_bottom_edge]
+measurements[:reverse_points][25] = measurements[:widths][:reverse_right_side_tuck_flap_indent], measurements[:heights][:side_tuck_flap_at_indent_2]
+measurements[:reverse_points][26] = measurements[:widths][:reverse_right_side_tuck_flap_indent_2], measurements[:heights][:side_tuck_flap_at_indent_1]
+measurements[:reverse_points][27] = measurements[:widths][:reverse_front_face_left_edge], measurements[:heights][:side_tuck_flap_before_indent_1]
+measurements[:reverse_points][28] = measurements[:widths][:reverse_front_face_left_edge], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][29] = measurements[:widths][:reverse_front_face_left_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:reverse_points][30] = measurements[:widths][:reverse_front_face_left_edge], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][31] = measurements[:widths][:reverse_front_face_left_edge], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][32] = measurements[:widths][:reverse_front_face_right_edge], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][33] = measurements[:widths][:reverse_front_face_right_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:reverse_points][34] = measurements[:widths][:reverse_front_face_right_edge], measurements[:heights][:bottom_edge]
+measurements[:reverse_points][35] = measurements[:widths][:reverse_side_glue_flap_right_edge], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][36] = measurements[:widths][:reverse_side_glue_flap_right_edge], measurements[:heights][:faces_bottom_edge]
+measurements[:reverse_points][37] = measurements[:widths][:reverse_notch_center], measurements[:heights][:faces_top_edge]
+measurements[:reverse_points][38] = measurements[:widths][:reverse_back_left_side_bottom_flap_glue_point] , measurements[:heights][:bottom_glue_flap_glue_point]
+measurements[:reverse_points][39] = measurements[:widths][:reverse_back_right_side_bottom_flap_glue_point], measurements[:heights][:bottom_glue_flap_glue_point]
+measurements[:reverse_points][40] = measurements[:widths][:reverse_bottom_glue_flap_glue_point]           , measurements[:heights][:bottom_glue_flap_glue_point]
+measurements[:reverse_points][41] = measurements[:widths][:reverse_side_glue_flap_glue_point]             , measurements[:heights][:side_glue_flap_glue_point]
+measurements[:reverse_points][42] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:faces_lower_tuck_flap_fold]
+measurements[:reverse_points][43] = measurements[:widths][:reverse_back_face_left_side],  measurements[:heights][:faces_lower_tuck_flap_fold]
+measurements[:reverse_points][44] = measurements[:widths][:reverse_right_side_flap_cut], measurements[:heights][:start_tuck_flap_corner_rounding]
+measurements[:reverse_points][45] = measurements[:widths][:reverse_left_side_flap_cut],  measurements[:heights][:start_tuck_flap_corner_rounding]
+measurements[:reverse_points][46] = measurements[:widths][:reverse_back_face_left_side],  measurements[:heights][:top_of_tuck_flap]
+measurements[:reverse_points][47] = measurements[:widths][:reverse_back_face_right_side],  measurements[:heights][:top_of_tuck_flap_face]
+measurements[:reverse_points][48] = measurements[:widths][:reverse_right_side_flap_cut],  measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:reverse_points][49] = measurements[:widths][:reverse_left_side_flap_cut],   measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:reverse_points][50] = measurements[:widths][:reverse_left_side_flap_cut],   measurements[:heights][:bottom_of_bottom_tuck_flap]
+measurements[:reverse_points][51] = measurements[:widths][:reverse_right_side_flap_cut],  measurements[:heights][:bottom_of_bottom_tuck_flap]
+measurements[:reverse_points][52] = measurements[:widths][:reverse_back_face_right_side], measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:reverse_points][53] = measurements[:widths][:reverse_back_face_left_side],  measurements[:heights][:start_bottom_tuck_flap_corner_rounding]
+measurements[:reverse_points][54] = measurements[:widths][:reverse_left_edge],                     measurements[:heights][:bottom_side_tuck_flap_before_indent_1]
+measurements[:reverse_points][55] = measurements[:widths][:reverse_left_edge_tuck_flap_indent],    measurements[:heights][:bottom_side_tuck_flap_at_indent_1]
+measurements[:reverse_points][56] = measurements[:widths][:reverse_left_edge_tuck_flap_indent_2],  measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:reverse_points][57] = measurements[:widths][:reverse_back_face_left_side],           measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:reverse_points][58] = measurements[:widths][:reverse_back_face_right_side],          measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:reverse_points][59] = measurements[:widths][:reverse_right_side_tuck_flap_indent],   measurements[:heights][:bottom_side_tuck_flap_at_indent_2]
+measurements[:reverse_points][60] = measurements[:widths][:reverse_right_side_tuck_flap_indent_2], measurements[:heights][:bottom_side_tuck_flap_at_indent_1]
+measurements[:reverse_points][61] = measurements[:widths][:reverse_front_face_left_edge],          measurements[:heights][:bottom_side_tuck_flap_before_indent_1]
+measurements[:reverse_points][62] = measurements[:widths][:reverse_back_face_right_side] - measurements[:width_in_points], measurements[:heights][:bottom_edge] + measurements[:height_in_points]
+measurements[:reverse_points][63] = measurements[:widths][:reverse_back_face_left_side] + measurements[:width_in_points], measurements[:heights][:top_of_top_face] - measurements[:height_in_points]
 
 
-face_points[:front_upper_left]  = reverse_points[32]
-face_points[:front_lower_right] = reverse_points[29]
-face_points[:back_upper_left]  = reverse_points[21]
-face_points[:back_lower_right] = reverse_points[13]
-face_points[:left_side_upper_left]  = reverse_points[10]
-face_points[:left_side_lower_right] = reverse_points[2]
-face_points[:glue_flap_upper_left]  = reverse_points[35]
-face_points[:glue_flap_lower_right] = reverse_points[33]
-face_points[:right_side_upper_left]  = reverse_points[28]
-face_points[:right_side_lower_right] = reverse_points[24]
-face_points[:bottom_upper_left]  = reverse_points[24]
-face_points[:bottom_lower_right] = reverse_points[12]
-face_points[:top_upper_left]  = reverse_points[19]
-face_points[:top_lower_right] = reverse_points[10]
-face_points[:tuck_flap_upper_left] = reverse_points[47]
-face_points[:tuck_flap_lower_right] = reverse_points[8]
-face_points[:hidden_tuck_flap_upper_left] = reverse_points[47]
-face_points[:hidden_tuck_flap_lower_right] = reverse_points[46]
-face_points[:credits_upper_left] = points[46]
-face_points[:credits_lower_right] = [points[33].first-6 , points[33].last  ]
-face_points[:dimensions_upper_left] = points[43]
-face_points[:dimensions_lower_right] = points[24]
-face_points[:url_upper_left] = points[47]
-face_points[:url_lower_right] = [points[29].first - 3, points[29].last]
+measurements[:face_points][:front_upper_left]  = measurements[:reverse_points][32]
+measurements[:face_points][:front_lower_right] = measurements[:reverse_points][29]
+measurements[:face_points][:back_upper_left]  = measurements[:reverse_points][21]
+measurements[:face_points][:back_lower_right] = measurements[:reverse_points][13]
+measurements[:face_points][:left_side_upper_left]  = measurements[:reverse_points][10]
+measurements[:face_points][:left_side_lower_right] = measurements[:reverse_points][2]
+measurements[:face_points][:glue_flap_upper_left]  = measurements[:reverse_points][35]
+measurements[:face_points][:glue_flap_lower_right] = measurements[:reverse_points][33]
+measurements[:face_points][:right_side_upper_left]  = measurements[:reverse_points][28]
+measurements[:face_points][:right_side_lower_right] = measurements[:reverse_points][24]
+measurements[:face_points][:bottom_upper_left]  = measurements[:reverse_points][24]
+measurements[:face_points][:bottom_lower_right] = measurements[:reverse_points][12]
+measurements[:face_points][:top_upper_left]  = measurements[:reverse_points][19]
+measurements[:face_points][:top_lower_right] = measurements[:reverse_points][10]
+measurements[:face_points][:tuck_flap_upper_left] = measurements[:reverse_points][47]
+measurements[:face_points][:tuck_flap_lower_right] = measurements[:reverse_points][8]
+measurements[:face_points][:hidden_tuck_flap_upper_left] = measurements[:reverse_points][47]
+measurements[:face_points][:hidden_tuck_flap_lower_right] = measurements[:reverse_points][46]
+measurements[:face_points][:credits_upper_left] = measurements[:points][46]
+measurements[:face_points][:credits_lower_right] = [measurements[:points][33].first-6 , measurements[:points][33].last  ]
+measurements[:face_points][:dimensions_upper_left] = measurements[:points][43]
+measurements[:face_points][:dimensions_lower_right] = measurements[:points][24]
+measurements[:face_points][:url_upper_left] = measurements[:points][47]
+measurements[:face_points][:url_lower_right] = [measurements[:points][29].first - 3, measurements[:points][29].last]
 
-if bottom_style == 'glued'
-  cut_lines << points[1] + points[11]
-  cut_lines << points[1] + points[2]
-  cut_lines << points[33] + points[34]
-  cut_lines << points[30] + points[34]
-  cut_lines << points[29] + points[30]
-  cut_lines << points[22] + points[30]
-  cut_lines << points[12] + points[23]
+if data['box']['bottom_style'] == 'glued'
+  measurements[:cut_lines] << measurements[:points][1] + measurements[:points][11]
+  measurements[:cut_lines] << measurements[:points][1] + measurements[:points][2]
+  measurements[:cut_lines] << measurements[:points][33] + measurements[:points][34]
+  measurements[:cut_lines] << measurements[:points][30] + measurements[:points][34]
+  measurements[:cut_lines] << measurements[:points][29] + measurements[:points][30]
+  measurements[:cut_lines] << measurements[:points][22] + measurements[:points][30]
+  measurements[:cut_lines] << measurements[:points][12] + measurements[:points][23]
 else
-  cut_lines << points[12] + points[53]
-  cut_lines << points[23] + points[52]
-  cut_lines << points[50] + points[51]
-  cut_lines << points[ 2] + points[54]
-  cut_lines << points[54] + points[55]
-  cut_lines << points[55] + points[56]
-  cut_lines << points[56] + points[57]
-  cut_lines << points[58] + points[59]
-  cut_lines << points[59] + points[60]
-  cut_lines << points[60] + points[61]
-  cut_lines << points[61] + points[29]
-  cut_lines << points[53] + points[50]
-  cut_lines << points[51] + points[52]
+  measurements[:cut_lines] << measurements[:points][12] + measurements[:points][53]
+  measurements[:cut_lines] << measurements[:points][23] + measurements[:points][52]
+  measurements[:cut_lines] << measurements[:points][50] + measurements[:points][51]
+  measurements[:cut_lines] << measurements[:points][ 2] + measurements[:points][54]
+  measurements[:cut_lines] << measurements[:points][54] + measurements[:points][55]
+  measurements[:cut_lines] << measurements[:points][55] + measurements[:points][56]
+  measurements[:cut_lines] << measurements[:points][56] + measurements[:points][57]
+  measurements[:cut_lines] << measurements[:points][58] + measurements[:points][59]
+  measurements[:cut_lines] << measurements[:points][59] + measurements[:points][60]
+  measurements[:cut_lines] << measurements[:points][60] + measurements[:points][61]
+  measurements[:cut_lines] << measurements[:points][61] + measurements[:points][29]
+  measurements[:cut_lines] << measurements[:points][53] + measurements[:points][50]
+  measurements[:cut_lines] << measurements[:points][51] + measurements[:points][52]
 end
 
-cut_lines << points[7] + points[14]
-cut_lines << points[16] + points[18]
-cut_lines << points[2] + points[4]
-cut_lines << points[4] + points[5]
-cut_lines << points[5] + points[6]
-cut_lines << points[6] + points[9]
-cut_lines << points[8] + points[15]
-cut_lines << points[12] + points[13]
-cut_lines << points[7] + points[43]
-cut_lines << points[14] + points[16]
-cut_lines << points[18] + points[42]
-cut_lines << points[20] + points[25]
-cut_lines << points[25] + points[26]
-cut_lines << points[26] + points[27]
-cut_lines << points[27] + points[28]
-cut_lines << points[28] + points[35]
-cut_lines << points[35] + points[36]
-cut_lines << points[33] + points[36]
-cut_lines << points[24] + points[23]
-cut_lines << points[17] + points[19]
-cut_lines << points[11] + points[12]
-cut_lines << points[22] + points[23]
+measurements[:cut_lines] << measurements[:points][7] + measurements[:points][14]
+measurements[:cut_lines] << measurements[:points][16] + measurements[:points][18]
+measurements[:cut_lines] << measurements[:points][2] + measurements[:points][4]
+measurements[:cut_lines] << measurements[:points][4] + measurements[:points][5]
+measurements[:cut_lines] << measurements[:points][5] + measurements[:points][6]
+measurements[:cut_lines] << measurements[:points][6] + measurements[:points][9]
+measurements[:cut_lines] << measurements[:points][8] + measurements[:points][15]
+measurements[:cut_lines] << measurements[:points][12] + measurements[:points][13]
+measurements[:cut_lines] << measurements[:points][7] + measurements[:points][43]
+measurements[:cut_lines] << measurements[:points][14] + measurements[:points][16]
+measurements[:cut_lines] << measurements[:points][18] + measurements[:points][42]
+measurements[:cut_lines] << measurements[:points][20] + measurements[:points][25]
+measurements[:cut_lines] << measurements[:points][25] + measurements[:points][26]
+measurements[:cut_lines] << measurements[:points][26] + measurements[:points][27]
+measurements[:cut_lines] << measurements[:points][27] + measurements[:points][28]
+measurements[:cut_lines] << measurements[:points][28] + measurements[:points][35]
+measurements[:cut_lines] << measurements[:points][35] + measurements[:points][36]
+measurements[:cut_lines] << measurements[:points][33] + measurements[:points][36]
+measurements[:cut_lines] << measurements[:points][24] + measurements[:points][23]
+measurements[:cut_lines] << measurements[:points][17] + measurements[:points][19]
+measurements[:cut_lines] << measurements[:points][11] + measurements[:points][12]
+measurements[:cut_lines] << measurements[:points][22] + measurements[:points][23]
 
-reverse_cut_lines << reverse_points[1]  + reverse_points[4]
-reverse_cut_lines << reverse_points[4]  + reverse_points[5]
-reverse_cut_lines << reverse_points[5]  + reverse_points[6]
-reverse_cut_lines << reverse_points[6]  + reverse_points[9]
-reverse_cut_lines << reverse_points[8]  + reverse_points[15]
-reverse_cut_lines << reverse_points[1]  + reverse_points[11]
-reverse_cut_lines << reverse_points[12] + reverse_points[13]
-reverse_cut_lines << reverse_points[7]  + reverse_points[43]
-reverse_cut_lines << reverse_points[14] + reverse_points[16]
-reverse_cut_lines << reverse_points[18] + reverse_points[42]
-reverse_cut_lines << reverse_points[20] + reverse_points[25]
-reverse_cut_lines << reverse_points[25] + reverse_points[26]
-reverse_cut_lines << reverse_points[26] + reverse_points[27]
-reverse_cut_lines << reverse_points[27] + reverse_points[28]
-reverse_cut_lines << reverse_points[28] + reverse_points[35]
-reverse_cut_lines << reverse_points[35] + reverse_points[36]
-reverse_cut_lines << reverse_points[33] + reverse_points[36]
-reverse_cut_lines << reverse_points[33] + reverse_points[34]
-reverse_cut_lines << reverse_points[31] + reverse_points[34]
-reverse_cut_lines << reverse_points[29] + reverse_points[31]
-reverse_cut_lines << reverse_points[24] + reverse_points[23]
-reverse_cut_lines << reverse_points[22] + reverse_points[30]
-reverse_cut_lines << reverse_points[12] + reverse_points[23]
-reverse_cut_lines << reverse_points[17] + reverse_points[19]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][1]  + measurements[:reverse_points][4]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][4]  + measurements[:reverse_points][5]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][5]  + measurements[:reverse_points][6]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][6]  + measurements[:reverse_points][9]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][8]  + measurements[:reverse_points][15]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][1]  + measurements[:reverse_points][11]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][12] + measurements[:reverse_points][13]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][7]  + measurements[:reverse_points][43]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][14] + measurements[:reverse_points][16]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][18] + measurements[:reverse_points][42]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][20] + measurements[:reverse_points][25]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][25] + measurements[:reverse_points][26]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][26] + measurements[:reverse_points][27]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][27] + measurements[:reverse_points][28]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][28] + measurements[:reverse_points][35]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][35] + measurements[:reverse_points][36]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][33] + measurements[:reverse_points][36]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][33] + measurements[:reverse_points][34]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][31] + measurements[:reverse_points][34]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][29] + measurements[:reverse_points][31]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][24] + measurements[:reverse_points][23]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][22] + measurements[:reverse_points][30]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][12] + measurements[:reverse_points][23]
+measurements[:reverse_cut_lines] << measurements[:reverse_points][17] + measurements[:reverse_points][19]
 
-if bottom_style == 'glued'
+if data['box']['bottom_style'] == 'glued'
 else
-  fold_lines << points[11] + points[22]
+  measurements[:fold_lines] << measurements[:points][11] + measurements[:points][22]
 end
-fold_lines << points[2] + points[33]
-fold_lines << points[3] + points[28]
-fold_lines << points[15] + points[17]
-fold_lines << points[10] + points[13]
-fold_lines << points[21] + points[24]
-fold_lines << points[28] + points[29]
-fold_lines << points[32] + points[33]
-fold_lines << points[42] + points[43]
+measurements[:fold_lines] << measurements[:points][2] + measurements[:points][33]
+measurements[:fold_lines] << measurements[:points][3] + measurements[:points][28]
+measurements[:fold_lines] << measurements[:points][15] + measurements[:points][17]
+measurements[:fold_lines] << measurements[:points][10] + measurements[:points][13]
+measurements[:fold_lines] << measurements[:points][21] + measurements[:points][24]
+measurements[:fold_lines] << measurements[:points][28] + measurements[:points][29]
+measurements[:fold_lines] << measurements[:points][32] + measurements[:points][33]
+measurements[:fold_lines] << measurements[:points][42] + measurements[:points][43]
+measurements[:glue_boxes] << measurements[:points][41] + [measurements[:widths][:glue_thick], measurements[:heights][:glue_side] ]
+measurements[:glue_boxes] << measurements[:points][40] + [measurements[:widths][:glue_width], measurements[:heights][:glue_thick] ]
+measurements[:glue_boxes] << measurements[:points][38] + [measurements[:widths][:glue_thick], measurements[:heights][:glue_flap_thick] ]
+measurements[:glue_boxes] << measurements[:points][39] + [measurements[:widths][:glue_thick], measurements[:heights][:glue_flap_thick] ]
 
-glue_boxes << points[41] + [widths[:glue_thick], heights[:glue_side] ]
-glue_boxes << points[40] + [widths[:glue_width], heights[:glue_thick] ]
-glue_boxes << points[38] + [widths[:glue_thick], heights[:glue_flap_thick] ]
-glue_boxes << points[39] + [widths[:glue_thick], heights[:glue_flap_thick] ]
-
-# tuck flap masks
-tuck_flap_masks = {}
-tuck_flap_masks[:top] = [reverse_points[8],reverse_points[7],reverse_points[14],reverse_points[16],reverse_points[18],reverse_points[19]]
-tuck_flap_masks[:bottom] = [reverse_points[12],reverse_points[53],reverse_points[50],reverse_points[51],reverse_points[52],reverse_points[23]]
+measurements[:tuck_flap_masks][:top] = [measurements[:reverse_points][8],measurements[:reverse_points][7],measurements[:reverse_points][14],measurements[:reverse_points][16],measurements[:reverse_points][18],measurements[:reverse_points][19]]
+measurements[:tuck_flap_masks][:bottom] = [measurements[:reverse_points][12],measurements[:reverse_points][53],measurements[:reverse_points][50],measurements[:reverse_points][51],measurements[:reverse_points][52],measurements[:reverse_points][23]]
 
 # box_orientation valid values are:
 #     vertical = point is upper left, no rotation
@@ -676,46 +665,25 @@ def draw_master_edge_ruler_faces
     end
 end
 
-Prawn::Document.generate("../boxes/landscape_#{width}#{unit}x#{height}#{unit}x#{thickness}#{unit}_box.pdf",
-                           :page_size   => data['box']['page_size'],
-                           :print_scaling => :none,
-                           :page_layout => data['box']['page_layout']) do
-font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
-                     "Engebrechtre"  => { :normal => "../fonts/engebrechtre.regular.ttf",
-                                          :italic => "../fonts/engebrechtre.italic.ttf",
-                                          :bold   => "../fonts/engebrechtre.bold.ttf" },
-                     "IceCream Soda" => { :normal => "../fonts/ICE-CS__.ttf" },
-                     "FFF Tusj"      => { :normal => "../fonts/FFF_Tusj.ttf" }
-
-  # how many boxes to draw?
-  gutter = EIGHTH_INCH
-  num_boxes = (720/(bounding_box_width+gutter)).to_i
-  # puts "I think I can fit #{num_boxes} on a page"
-
-  # page 1, outline box with cut and fold lines
-  draw_master_edge_ruler
-
-  # create bounding box
-  bounding_box [0.5.in,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
-    stroke_bounds
-    render_box_face face_points[:credits_upper_left], face_points[:credits_lower_right],
+def draw_box_outline_and_fold_lines info_data, measurements
+    render_box_face measurements[:face_points][:credits_upper_left], measurements[:face_points][:credits_lower_right],
                     info_data['faces']['credits']
-    render_box_face face_points[:url_upper_left], face_points[:url_lower_right],
+    render_box_face measurements[:face_points][:url_upper_left], measurements[:face_points][:url_lower_right],
                     info_data['faces']['url']
-    render_box_face face_points[:dimensions_upper_left], face_points[:dimensions_lower_right],
+    render_box_face measurements[:face_points][:dimensions_upper_left], measurements[:face_points][:dimensions_lower_right],
                     info_data['faces']['dimensions']
 
 
 
-    if data['debug_points']
-      points.each_with_index do |p, i|
+    if info_data['debug_points']
+      measurements[:points].each_with_index do |p, i|
         # puts "Point #{i} = #{p.inspect}"
         fill_circle p, 3
         draw_text i, at: p
       end
     end
     stroke do
-      cut_lines.each do |x1,y1,x2,y2|
+      measurements[:cut_lines].each do |x1,y1,x2,y2|
         line [x1, y1], [x2, y2]
       end
     end
@@ -724,7 +692,7 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
     fill_color 'FFFFFF'
     stroke_color '000000'
     #bounding_box points[33], width: h, height: w do
-     pie_slice points[37], :radius => QUARTER_INCH,
+     pie_slice measurements[:points][37], :radius => QUARTER_INCH,
                :start_angle => 180, :end_angle => 0
 
     #end
@@ -733,7 +701,7 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
       self.line_width = 0.5
       dash 2, :space => 2, :phase => 0
       stroke do
-        fold_lines.each do |x1,y1,x2,y2|
+        measurements[:fold_lines].each do |x1,y1,x2,y2|
           line [x1, y1], [x2, y2]
         end
       end
@@ -743,78 +711,67 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
 
     # glue boxes
     fill_color 'CCCCCC'
-    fill_rectangle points[41], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_height_sides]
-    if bottom_style == 'glued'
-      fill_rectangle points[40], heights[:glue_patch_on_width_sides], heights[:glue_patch_on_thickness_sides]
-      fill_rectangle points[38], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_thickness_sides]
-      fill_rectangle points[39], heights[:glue_patch_on_thickness_sides], heights[:glue_patch_on_thickness_sides]
+    fill_rectangle measurements[:points][41], measurements[:heights][:glue_patch_on_thickness_sides], measurements[:heights][:glue_patch_on_height_sides]
+    if info_data['box']['bottom_style'] == 'glued'
+      fill_rectangle measurements[:points][40], measurements[:heights][:glue_patch_on_width_sides], measurements[:heights][:glue_patch_on_thickness_sides]
+      fill_rectangle measurements[:points][38], measurements[:heights][:glue_patch_on_thickness_sides], measurements[:heights][:glue_patch_on_thickness_sides]
+      fill_rectangle measurements[:points][39], measurements[:heights][:glue_patch_on_thickness_sides], measurements[:heights][:glue_patch_on_thickness_sides]
     end
     fill_color '000000'
-  end
+end
 
-  # create bounding box
-  bounding_box [0.75.in+bounding_box_width,0.5.in+bounding_box_height],
-               width: bounding_box_width, height: bounding_box_height do
-    #stamp 'inside_box'
-  end
-
-  # page 2 with the images
-  start_new_page
-  draw_master_edge_ruler_faces
-
-  bounding_box [9.5.in-bounding_box_width,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
-    stroke_bounds
+def draw_box_faces data, measurements
     font_size 150
     # FRONT
-    render_box_face face_points[:front_upper_left], face_points[:front_lower_right],
+    render_box_face measurements[:face_points][:front_upper_left], measurements[:face_points][:front_lower_right],
                     data['faces']['front']
         ## reflect the front onto the tuck flap
     save_graphics_state do
       soft_mask do
         fill_color 0,0,0,0
         stroke_color 0,0,0,0
-        fill_and_stroke_polygon *tuck_flap_masks[:top]
+        fill_and_stroke_polygon *measurements[:tuck_flap_masks][:top]
       end
-        rotate 180, origin: reverse_points[8] do
-          render_box_face reverse_points[8], reverse_points[63],
+        rotate 180, origin: measurements[:reverse_points][8] do
+          render_box_face measurements[:reverse_points][8], measurements[:reverse_points][63],
                           data['faces']['front']
         end
         #fill_color 'ff0000'
         #fill_rectangle [0,bounds.height],bounds.width, bounds.height
     end
 
-    if bottom_style == 'tucked'
+    if data['box']['bottom_style'] == 'tucked'
       # reflect the bottom of the face onto the bottom tuckflap
       save_graphics_state do
         soft_mask do
           fill_color 0,0,0,0
           stroke_color 0,0,0,0
-          fill_and_stroke_polygon *tuck_flap_masks[:bottom]
+          fill_and_stroke_polygon *measurements[:tuck_flap_masks][:bottom]
         end
-        rotate 180, origin: reverse_points[23] do
-          render_box_face reverse_points[62], reverse_points[23],
+        rotate 180, origin: measurements[:reverse_points][23] do
+          render_box_face measurements[:reverse_points][62], measurements[:reverse_points][23],
                           data['faces']['front']
         end
       end
     end
 
     # BACK
-    render_box_face face_points[:back_upper_left], face_points[:back_lower_right],
+    render_box_face measurements[:face_points][:back_upper_left], measurements[:face_points][:back_lower_right],
                     data['faces']['back']
     # BOTTOM
-    render_box_face face_points[:bottom_upper_left], face_points[:bottom_lower_right],
+    render_box_face measurements[:face_points][:bottom_upper_left], measurements[:face_points][:bottom_lower_right],
                     data['faces']['bottom']
     ## LEFT SIDE
-    render_box_face face_points[:left_side_upper_left], face_points[:left_side_lower_right],
+    render_box_face measurements[:face_points][:left_side_upper_left], measurements[:face_points][:left_side_lower_right],
                     data['faces']['left_side']
     ## Copy LEFT SIDE to the glue flap
-    render_box_face face_points[:glue_flap_upper_left], face_points[:glue_flap_lower_right],
+    render_box_face measurements[:face_points][:glue_flap_upper_left], measurements[:face_points][:glue_flap_lower_right],
                     data['faces']['left_side']
     ## RIGHT SIDE
-    render_box_face face_points[:right_side_upper_left], face_points[:right_side_lower_right],
+    render_box_face measurements[:face_points][:right_side_upper_left], measurements[:face_points][:right_side_lower_right],
                     data['faces']['right_side']
     ## TOP
-    render_box_face face_points[:top_upper_left], face_points[:top_lower_right],
+    render_box_face measurements[:face_points][:top_upper_left], measurements[:face_points][:top_lower_right],
                     data['faces']['top']
 
     ## SIDE TUCK FLAPS
@@ -822,43 +779,43 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
     if fill_color data['faces']['left_side']['background_color']
       fill_color data['faces']['left_side']['background_color']
     end
-    fill_polygon reverse_points[ 9],
-                 reverse_points[ 6],
-                 reverse_points[ 5],
-                 reverse_points[ 4],
-                 reverse_points[ 3],
-                 reverse_points[10]
+    fill_polygon measurements[:reverse_points][ 9],
+                 measurements[:reverse_points][ 6],
+                 measurements[:reverse_points][ 5],
+                 measurements[:reverse_points][ 4],
+                 measurements[:reverse_points][ 3],
+                 measurements[:reverse_points][10]
     # right side
     if fill_color data['faces']['right_side']['background_color']
       fill_color data['faces']['right_side']['background_color']
     end
-    fill_polygon reverse_points[25],
-                 reverse_points[26],
-                 reverse_points[27],
-                 reverse_points[28],
-                 reverse_points[21],
-                 reverse_points[20]
-    if bottom_style == 'tucked'
+    fill_polygon measurements[:reverse_points][25],
+                 measurements[:reverse_points][26],
+                 measurements[:reverse_points][27],
+                 measurements[:reverse_points][28],
+                 measurements[:reverse_points][21],
+                 measurements[:reverse_points][20]
+    if data['box']['bottom_style'] == 'tucked'
       # left side
       if fill_color data['faces']['left_side']['background_color']
         fill_color data['faces']['left_side']['background_color']
       end
-      fill_polygon reverse_points[ 2],
-                   reverse_points[54],
-                   reverse_points[55],
-                   reverse_points[56],
-                   reverse_points[57],
-                   reverse_points[13]
+      fill_polygon measurements[:reverse_points][ 2],
+                   measurements[:reverse_points][54],
+                   measurements[:reverse_points][55],
+                   measurements[:reverse_points][56],
+                   measurements[:reverse_points][57],
+                   measurements[:reverse_points][13]
       # right side
       if fill_color data['faces']['right_side']['background_color']
         fill_color data['faces']['right_side']['background_color']
       end
-      fill_polygon reverse_points[24],
-                   reverse_points[58],
-                   reverse_points[59],
-                   reverse_points[60],
-                   reverse_points[61],
-                   reverse_points[29]
+      fill_polygon measurements[:reverse_points][24],
+                   measurements[:reverse_points][58],
+                   measurements[:reverse_points][59],
+                   measurements[:reverse_points][60],
+                   measurements[:reverse_points][61],
+                   measurements[:reverse_points][29]
     else
       # bottom style glued
       # left side
@@ -866,37 +823,75 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
         fill_color data['faces']['left_side']['background_color']
         stroke_color data['faces']['left_side']['background_color']
       end
-      fill_rectangle reverse_points[13], t, t
-      # fill_and_stroke_rectangle reverse_points[13], t, t
+      fill_rectangle measurements[:reverse_points][13], measurements[:thickness_in_points], measurements[:thickness_in_points]
+      # fill_and_stroke_rectangle measurements[:reverse_points][13], measurements[:thickness_in_points], measurements[:thickness_in_points]
       # right side
       if fill_color data['faces']['right_side']['background_color']
         fill_color data['faces']['right_side']['background_color']
         stroke_color data['faces']['right_side']['background_color']
       end
-      fill_rectangle reverse_points[29], t, t
-      # fill_and_stroke_rectangle reverse_points[29], t, t
+      fill_rectangle measurements[:reverse_points][29], measurements[:thickness_in_points], measurements[:thickness_in_points]
+      # fill_and_stroke_rectangle measurements[:reverse_points][29], measurements[:thickness_in_points], measurements[:thickness_in_points]
       # front
       if fill_color data['faces']['front']['background_color']
         fill_color data['faces']['front']['background_color']
         stroke_color data['faces']['front']['background_color']
       end
-      fill_and_stroke_rectangle reverse_points[33], w, t
+      fill_and_stroke_rectangle measurements[:reverse_points][33], measurements[:width_in_points], measurements[:thickness_in_points]
     end
 
 
     font_size 10
     fill_color '000000'
     if data['debug_points']
-      reverse_points.each_with_index do |p, i|
+      measurements[:reverse_points].each_with_index do |p, i|
         # puts "Reverse Point #{i} = #{p.inspect}"
         fill_circle p, 3
         draw_text i, at: p
       end
     end
+end
+
+
+Prawn::Document.generate("../boxes/landscape_#{width}#{unit}x#{height}#{unit}x#{thickness}#{unit}_box.pdf",
+                           :page_size   => data['box']['page_size'],
+                           :print_scaling => :none,
+                           :page_layout => data['box']['page_layout']) do
+font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
+                     "Engebrechtre"  => { :normal => "../fonts/engebrechtre.regular.ttf",
+                                          :italic => "../fonts/engebrechtre.italic.ttf",
+                                          :bold   => "../fonts/engebrechtre.bold.ttf" },
+                     "IceCream Soda" => { :normal => "../fonts/ICE-CS__.ttf" },
+                     "Sarina"        => { :normal => "../fonts/Sarina-Regular.ttf" },
+                     "FFF Tusj"      => { :normal => "../fonts/FFF_Tusj.ttf" }
+
+  # how many boxes to draw?
+  gutter = EIGHTH_INCH
+  num_boxes = (720/(bounding_box_width+gutter)).to_i
+  # puts "I think I can fit #{num_boxes} on a page"
+
+  # boxes with the faces/images
+  draw_master_edge_ruler_faces
+
+  1.upto(num_boxes) do |num|
+    offset = 9.625.in - EIGHTH_INCH * num - num * bounding_box_width
+    bounding_box [offset, 0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
+      stroke_bounds
+      draw_box_faces data, measurements
+    end
   end
 
-  bounding_box [9.25.in-2*bounding_box_width,0.5.in+bounding_box_height],
-               width: bounding_box_width, height: bounding_box_height do
-    # stamp 'box_faces'
+  start_new_page
+  # outline box with cut and fold lines
+  draw_master_edge_ruler
+
+  1.upto(num_boxes) do |num|
+    offset = 0.375.in + EIGHTH_INCH * num + (num - 1) * bounding_box_width
+    bounding_box [offset, 0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
+      draw_box_outline_and_fold_lines info_data, measurements
+  #bounding_box [0.5.in,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
+      stroke_bounds
+    end
   end
+
 end
