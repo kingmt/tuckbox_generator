@@ -880,7 +880,6 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
   1.upto(num_boxes) do |num|
     offset = 9.625.in - EIGHTH_INCH * num - num * bounding_box_width
     bounding_box [offset, 0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
-      stroke_bounds
       draw_box_faces data, measurements
     end
   end
@@ -893,8 +892,6 @@ font_families.update "Pacifico"      => { :normal => "../fonts/Pacifico.ttf" },
     offset = 0.375.in + EIGHTH_INCH * num + (num - 1) * bounding_box_width
     bounding_box [offset, 0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
       draw_box_outline_and_fold_lines info_data, measurements
-  #bounding_box [0.5.in,0.5.in+bounding_box_height], width: bounding_box_width, height: bounding_box_height do
-      stroke_bounds
     end
   end
 
