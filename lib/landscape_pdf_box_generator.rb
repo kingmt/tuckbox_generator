@@ -3,6 +3,12 @@ require "prawn/measurement_extensions"
 require "prawn_shapes"
 require 'yaml'
 
+EIGHTH_INCH = 0.125.in
+QUARTER_INCH = 0.25.in
+THREE_QUARTER_INCH = 0.75.in
+ONE_INCH = 1.in
+ONE_CENTIMETER = 1.cm
+
 data = YAML.load_file ARGV[0]
 # change page layout from string to symbol
 data['box']['page_layout'] = data['box']['page_layout'].to_sym
@@ -64,13 +70,6 @@ end
 margin_x =  0
 
 right_margin = 720
-margin_y = 0
-margin_y1 = 7.5 * 72
-EIGHTH_INCH = 0.125.in
-QUARTER_INCH = 0.25.in
-THREE_QUARTER_INCH = 0.75.in
-ONE_INCH = 1.in
-ONE_CENTIMETER = 1.cm
 flap_height = if t > THREE_QUARTER_INCH
                 THREE_QUARTER_INCH
               elsif t < QUARTER_INCH
